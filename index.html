@@ -36,7 +36,7 @@ body{margin:0;background:#cdebd6;font-family:system-ui,-apple-system,"Apple SD G
 .dp{width:50px;height:50px;border-radius:12px;border:2px solid var(--line);background:var(--cream);font-size:18px;color:var(--ink);touch-action:none}
 .ab{border-radius:14px;border:2px solid var(--line);background:var(--cream);color:var(--ink);font-weight:800;padding:8px 14px;font-size:14px;font-family:inherit;cursor:pointer}
 input,textarea{font-family:inherit;border:2px solid #e0cda6;border-radius:10px;padding:8px;background:#fff;color:var(--ink);width:100%;font-size:14px}
-@media(max-width:600px){#mm{width:104px!important}.tip{display:none}#dlg{font-size:14px}#top .ab{padding:5px 9px;font-size:12px}#top h1{font-size:18px}#hud{gap:3px;right:6px;top:6px;left:6px}#hud .pill{font-size:10px;padding:1px 7px;border-width:1.5px}#toast{top:auto;bottom:40px;left:50%;right:auto;transform:translateX(-50%);max-width:88%;white-space:normal;word-break:keep-all;text-align:center;font-size:11px;line-height:1.35;padding:3px 10px}#hint{font-size:11px;padding:2px 10px;bottom:6px;max-width:92%;white-space:normal;text-align:center}}
+@media(max-width:600px){.tip{display:none}#dlg{font-size:14px}#top .ab{padding:5px 9px;font-size:12px}#top h1{font-size:18px}#hud{gap:3px;right:6px;top:6px;left:6px}#hud .pill{font-size:10px;padding:1px 7px;border-width:1.5px}#toast{top:auto;bottom:40px;left:50%;right:auto;transform:translateX(-50%);max-width:88%;white-space:normal;word-break:keep-all;text-align:center;font-size:11px;line-height:1.35;padding:3px 10px}#hint{font-size:11px;padding:2px 10px;bottom:6px;max-width:92%;white-space:normal;text-align:center}}
 .nm{font-size:11px;font-weight:700;background:rgba(255,248,231,.92);border:1px solid #c9a77a;border-radius:8px;padding:0 6px;color:#5b4636;white-space:nowrap;display:inline-block}
 .bub{background:#fff;border:2px solid #c9a77a;border-radius:12px;padding:3px 9px;font-size:13px;margin-bottom:3px;max-width:180px;color:#5b4636;word-break:keep-all}
 .err{color:#c0392b;font-size:13px;min-height:18px}
@@ -1301,8 +1301,9 @@ J.addEventListener('pointermove',e=>{if(e.pointerId===pid)mv(e)});['pointerup','
 // ---------- 빠른 게임 시간 안내 · 모바일 지도 ----------
 GUIDE.splice(1,0,['시간 · 계절','하루 시간(낮·밤)은 현실 시간과 똑같아요. 화면 위 시계 = 지금 시간!|계절만 빨리 흘러요: 계절 하나 = 현실 약 7~8일, 1년 = 현실 약 한 달.|크리스마스·할로윈 시즌, 제철 작물, 계절 풍경은 빠른 계절 달력을 따라요.|작물 시세는 매일 밤 12시에 바뀌어요.']);
 TIPS.push('시간은 현실과 같고, 계절은 일주일쯤마다 바뀌어요!');
-(function(){const w=$('mmw'),c=$('mm');if(!w||!c)return;const small=matchMedia('(max-width:700px)').matches||matchMedia('(pointer:coarse)').matches;w.style.pointerEvents='auto';w.style.cursor='pointer';w.title='누르면 지도를 접어요';w.addEventListener('click',()=>{if(miniOn)toggleMini()});
-if(small){c.style.width='96px';w.style.opacity='.88';w.style.padding='2px';const lg=w.querySelector('div');if(lg)lg.style.display='none';miniOn=false;w.style.display='none'}})();
+(function(){const w=$('mmw'),c=$('mm');if(!w||!c)return;const small=()=>matchMedia('(max-width:600px)').matches;let big=false;w.style.pointerEvents='auto';w.style.cursor='pointer';w.title='누르면 지도가 커지거나 작아져요';
+const apply=()=>{const lg=w.querySelector('div');if(small()){c.dataset.sm=1;c.style.setProperty('width',(big?150:76)+'px','important');w.style.opacity=big?'1':'.9';w.style.padding='2px';if(lg)lg.style.display=big?'':'none'}else{if(c.dataset.sm){delete c.dataset.sm;c.style.removeProperty('width');VH=0;fitVH()}w.style.opacity='';w.style.padding='';if(lg)lg.style.display=''}};
+w.addEventListener('click',()=>{big=!big;apply()});addEventListener('resize',()=>setTimeout(apply,300));miniOn=true;w.style.display='block';apply();window.miniApply=apply})();
 
 // ===== pr.js : 함께 보는 식당 손님 · 선물 상자 =====
 const CSPD=42,CPAT=55000,CEAT=5000;
