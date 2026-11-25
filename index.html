@@ -29,6 +29,10 @@ body{margin:0;background:#cdebd6;font-family:system-ui,-apple-system,"Apple SD G
 .grid{display:grid;gap:6px}
 .tabs{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
 #ctrl{display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:12px}
+#joy{position:relative;width:128px;height:128px;border-radius:50%;background:radial-gradient(circle at 50% 45%,#fffaf0 0,#fff3dc 55%,#f3dfb8 100%);border:3px solid var(--line);box-shadow:inset 0 -4px 0 rgba(160,120,70,.18);touch-action:none;cursor:grab;flex:none}
+#joyk{position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:50%;background:radial-gradient(circle at 38% 32%,#ffd9e4 0,#ffb6c8 55%,#f08aa8 100%);border:3px solid #c9708c;box-shadow:0 4px 0 rgba(120,60,80,.25);transition:transform .12s ease-out;pointer-events:none}
+#joy.on #joyk{transition:none}#joy.on{cursor:grabbing}
+.ja{position:absolute;font-size:11px;color:#c9a77a;pointer-events:none}
 .dp{width:50px;height:50px;border-radius:12px;border:2px solid var(--line);background:var(--cream);font-size:18px;color:var(--ink);touch-action:none}
 .ab{border-radius:14px;border:2px solid var(--line);background:var(--cream);color:var(--ink);font-weight:800;padding:8px 14px;font-size:14px;font-family:inherit;cursor:pointer}
 input,textarea{font-family:inherit;border:2px solid #e0cda6;border-radius:10px;padding:8px;background:#fff;color:var(--ink);width:100%;font-size:14px}
@@ -52,12 +56,8 @@ h3{margin:12px 0 6px;font-size:15px}
 <div id="modal" class="ov"><div class="box" id="mb"></div></div>
 </div>
 <div id="ctrl">
-<div style="display:grid;grid-template-columns:repeat(3,50px);grid-template-rows:repeat(3,50px);gap:4px">
-<span></span><button class="dp" data-k="up" aria-label="위">▲</button><span></span>
-<button class="dp" data-k="left" aria-label="왼쪽">◀</button><span></span><button class="dp" data-k="right" aria-label="오른쪽">▶</button>
-<span></span><button class="dp" data-k="down" aria-label="아래">▼</button><span></span>
-</div>
-<div class="tip" style="font-size:12px;text-align:center;line-height:1.8;color:#6b8a70">방향키·WASD 이동<br>Space 행동 · I 가방 · K 도감<br>화면 아래 말풍선이 할 수 있는 행동이에요</div>
+<div id="joy" aria-label="조이스틱"><div id="joyk"></div><span class="ja" style="top:6px;left:50%;transform:translateX(-50%)">▲</span><span class="ja" style="bottom:6px;left:50%;transform:translateX(-50%)">▼</span><span class="ja" style="left:8px;top:50%;transform:translateY(-50%)">◀</span><span class="ja" style="right:8px;top:50%;transform:translateY(-50%)">▶</span></div>
+<div class="tip" style="font-size:12px;text-align:center;line-height:1.8;color:#6b8a70">조이스틱을 끌어서 이동 (끝까지 밀면 달리기)<br>방향키·WASD도 돼요 · Space 행동 · I 가방 · K 도감<br>화면 아래 말풍선이 할 수 있는 행동이에요</div>
 <button class="ab" id="bA" style="flex:none;width:96px;height:96px;border-radius:50%;font-size:16px">행동<br><span style="font-size:11px">Space</span></button>
 </div>
 </div>
@@ -683,7 +683,7 @@ if(newsTab==='ev'){const E=Object.entries(S.events||{}).filter(([k,e])=>e);nb.in
 $('evn').oninput=()=>{$('eve').textContent=''};$('eva').onclick=async()=>{const n=$('evn').value.trim(),m=+$('evm').value,d=+$('evd').value;if(!n){$('eve').textContent='기념일 이름을 적어 주세요';return}if(d>[31,29,31,30,31,30,31,31,30,31,30,31][m-1]){$('eve').textContent='그 달에는 그 날짜가 없어요';return}await NET.push('island/events',{n,m,d,by:S.name});newsUI();msg(`${n} (${m}월 ${d}일)을 추가했어요!`);setTimeout(checkGifts,800)};
 mb.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{await NET.remove('island/events/'+b.dataset.del);newsUI()})}}
 function presTick(dt){if(!ME||!NET)return;presT-=dt;const fxOn=mySay&&mySay.fx&&nowS()-mySay.ft<2600;const po=S.pose&&S.scene==='home'?{t:S.pose.t,x:S.pose.x,y:S.pose.y}:null;
-const p={n:S.name,sc:S.scene||'out',g:S.gender,fx:fxOn?mySay.fx:'',ft:fxOn?mySay.ft:0,x:Math.round(S.px),y:Math.round(S.py),d:S.dir,w:walking?1:0,h:S.hair,s:S.skin,tp:S.eq.top,bt:S.eq.bot,ht:S.eq.hat||'',m:mySay&&mySay.t>Date.now()-6000?mySay.m:'',po:po||'',pt:S.pet?[S.pet.t,S.pet.c,S.pet.n,Math.round(PET.x),Math.round(PET.y),PET.mv?1:0]:''};const j=JSON.stringify(p);
+const p={n:S.name,sc:S.scene||'out',g:S.gender,fx:fxOn?mySay.fx:'',ft:fxOn?mySay.ft:0,x:Math.round(S.px),y:Math.round(S.py),d:S.dir,w:walking?1:0,h:S.hair,s:S.skin,tp:S.eq.top,bt:S.eq.bot,ht:S.eq.hat||'',m:mySay&&mySay.t>Date.now()-6000?mySay.m:'',hd:S.hold||'',sT:S.scT||0,fi:F?[F.tx,F.ty,F.ph==='bite'?1:0]:0,ca:(S.lc&&nowS()-S.lc.t<2600)?S.lc.id:'',po:po||'',pt:S.pet?[S.pet.t,S.pet.c,S.pet.n,Math.round(PET.x),Math.round(PET.y),PET.mv?1:0]:''};const j=JSON.stringify(p);
 if((j!==lastPres&&presT<=0)||presT<-5){lastPres=j;presT=.12;p.t=nowS();NET.set('presence/'+ME,p)}}
 function OTH_L(L){OL=others().filter(q=>(q.p.sc||'out')===(S.scene||'out'));OL.forEach(({p,o})=>{o.x+=(p.x-o.x)*0.25;o.y+=(p.y-o.y)*0.25;const po=p.po&&typeof p.po==='object'&&S.scene==='home'?p.po:null;
 L.push([po?(+po.y)*T+16:o.y+15,()=>{const gg=p.g==='f'?'f':'m';const ck=[p.h,p.s,p.tp,p.bt,gg].join('|');const P=PCACHE[ck]||(PCACHE[ck]=buildPlayer(okCol(p.h,HAIR[0]),okCol(p.s,SKIN[0]),IT[p.tp]?p.tp:'t_sky',IT[p.bt]?p.bt:'b_jean',gg));
@@ -1248,6 +1248,46 @@ setInterval(()=>{try{pzTick()}catch(e){console.error(e)}},1000);
 const _nt2=noticeTab;noticeTab=function(nb){_nt2(nb);if(!nb)return;const ev=eveEv(),r=treR(),left=chests(r).filter((c,i)=>!treOpen(r,i)).length,w=kst().getUTCDay();nb.insertAdjacentHTML('afterbegin',`<p style="font-weight:800;color:#3a7ad0;margin:0 0 6px">호숫가 광장: ${ev?EVN[ev]+' 하는 중!':`오늘 밤 8시 ${w===0||w===6?'불꽃놀이 축제':'캠프파이어'}`} · 보물 ${left}개 남음</p>`)};
 GUIDE.splice(2,0,['호숫가 광장 · 행사','섬 한가운데 호수 옆 광장이에요. 게시판에서 오늘 행사와 시간을 봐요.|밤 8시~12시: 주말엔 불꽃놀이 축제(엽서 + 500 코인), 평일엔 캠프파이어(300 코인 + 마시멜로 굽기).|3시간마다 광장 근처에 보물 상자 5개가 생겨요. 먼저 여는 사람이 가져가요!|무대 위에 올라가 Space → 노래·춤·마술. 친구가 광장에서 보고 있으면 박수 보너스!|저녁 행사 때 둘이 같이 광장에 있으면 커플 보너스 500 코인씩.|기념일에는 무대에 이름이 걸리고, 광장에 오면 케이크 선물을 받아요.|게시판에 "광장 약속"을 남기면 이틀 동안 게시판 위에 떠 있어요.']);
 TIPS.push('호숫가 광장에서 밤 8시마다 행사가 열려요. 3시간마다 보물 상자도 나타나요!');
+
+// ===== ph.js : 손잡기 =====
+let HLOST=0,HLAST=0,HHT=0,HMT=0,HH=[];const HSEEN=new Set();
+function askHold(k,name){S.holdAsk=k;NET.push('emote/'+k,{f:S.name,fk:ME,ty:'hold?',t:nowS()});toast(`${name}에게 손잡기를 신청했어요. 기다려 주세요~`)}
+function setHold(k,name){S.hold=k;S.holdAsk=null;HLOST=0;presT=0;beep(1046,.08);setTimeout(()=>beep(1318,.1),120);toast(`${name||'친구'}와 손을 잡았어요 ♥ 놓을 땐 친구를 보고 Space → 손 놓기`)}
+function releaseHold(notify,why){const k=S.hold;if(!k)return;S.hold=null;presT=0;if(notify)NET.push('emote/'+k,{f:S.name,fk:ME,ty:'hold-',t:nowS()});toast(why||'손을 놓았어요')}
+const _oef=onEmoteFor;onEmoteFor=function(k){const h=_oef(k);return v=>{if(k===ME&&v&&typeof v==='object')for(const id in v){const e=v[id];if(!e||HSEEN.has(id)||!/^hold/.test(e.ty||''))continue;HSEEN.add(id);if(nowS()-(+e.t||0)>60000)continue;const f=String(e.f||'친구').slice(0,6),fk=e.fk;
+if(e.ty==='hold?'){beep(1180,.08);openModal(head('손잡기 ♥')+`<p style="font-size:18px;text-align:center;margin:14px 0">${esc(f)}님이 손을 잡으려고 해요 ♥</p><div style="display:flex;gap:8px"><button class="gb big" id="hy" style="flex:1">좋아!</button><button class="gb big" id="hn">다음에</button></div>`);$('hy').onclick=()=>{closeModal();NET.push('emote/'+fk,{f:S.name,fk:ME,ty:'hold!',t:nowS()});setHold(fk,f)};$('hn').onclick=()=>{closeModal();NET.push('emote/'+fk,{f:S.name,fk:ME,ty:'hold-',t:nowS()})}}
+if(e.ty==='hold!'&&S.holdAsk===fk)setHold(fk,f);
+if(e.ty==='hold-'){if(S.hold===fk)releaseHold(false,`${f}님이 손을 놓았어요`);else if(S.holdAsk===fk){S.holdAsk=null;toast(`${f}: 다음에 잡자~`)}}}h(v)}};
+const _emo=emoteUI;emoteUI=function(k,name){_emo(k,name);const g=mb.querySelector('.grid');if(!g)return;const held=S.hold===k;g.insertAdjacentHTML('beforeend',`<button class="gb big" id="hhold" style="grid-column:span 2;background:#ffe4ee">${held?'손 놓기':'손잡기 신청 ♥'}</button>`);$('hhold').onclick=()=>{closeModal();held?releaseHold(true):askHold(k,name)}};
+function holdTick(){if(!S||!S.hold)return;const now=performance.now(),dt=Math.min(.1,HLAST?(now-HLAST)/1000:0);HLAST=now;const P=others().find(q=>q.k===S.hold);
+if(!P||P.p.hd!==ME){HLOST+=dt;if(HLOST>4)releaseHold(false,'손이 놓였어요');return}HLOST=0;
+if((P.p.sc||'out')!==(S.scene||'out')){if(!walking&&(+P.p.sT||0)>(S.scT||0)&&(P.p.sc==='out'||SC[P.p.sc])){S.scene=P.p.sc;S.scT=+P.p.sT;S.px=+P.p.x;S.py=+P.p.y;S.pose=null;B=[];F=null;presT=0}return}
+const tx=+P.p.x+(S.px<+P.p.x?-13:13),ty=+P.p.y,dx=tx-S.px,dy=ty-S.py,d=Math.hypot(dx,dy);if(d>120){S.px=+P.p.x;S.py=+P.p.y;return}
+if(!walking&&d>3){const v=Math.min(d,110*dt),nx=S.px+dx/d*v,ny=S.py+dy/d*v,cx=Math.floor((nx+8)/T),cy=Math.floor((ny+12)/T);if(!solid(cx,cy)||(cx===Math.floor((+P.p.x+8)/T)&&cy===Math.floor((+P.p.y+12)/T))){S.px=nx;S.py=ny;if(Math.abs(dx)>Math.abs(dy))S.dir=dx>0?'right':'left'}}
+const mv=walking||P.p.w;if(mv){HHT-=dt;if(HHT<=0){HHT=.5;HH.push({x:(S.px+P.o.x)/2+8,y:Math.min(S.py,P.o.y)-6,t:0})}HMT+=dt;if(HMT>=1){HMT-=1;mHook('hold',1)}}}
+const _oth=OTH_L;OTH_L=function(L){_oth(L);try{holdTick()}catch(e){console.error(e)}if(!S.hold)return;const q=OL.find(q=>q.k===S.hold);const dt=1/60;HH.forEach(h=>{h.t+=dt;h.y-=14*dt});HH=HH.filter(h=>h.t<1.6);
+if(q){const a=S.px+8,b=q.o.x+8,y=Math.round((S.py+q.o.y)/2)+9;if(Math.abs(S.py-q.o.y)<12&&Math.abs(a-b)<40){const x1=Math.min(a,b)+5,x2=Math.max(a,b)-5;L.push([Math.max(S.py,q.o.y)+15.7,()=>{R(S.skin||'#ffd7b5',x1,y,Math.max(2,x2-x1),2);R('rgba(0,0,0,.18)',x1,y+2,Math.max(2,x2-x1),1)}])}}
+L.push([9e8+1,()=>HH.forEach(h=>{ctx.globalAlpha=1-h.t/1.6;const x=Math.round(h.x),y=Math.round(h.y);R('#ff6b9a',x-2,y,2,2);R('#ff6b9a',x+1,y,2,2);R('#ff6b9a',x-2,y+2,5,1);R('#ff6b9a',x-1,y+3,3,1);R('#ff6b9a',x,y+4,1,1);ctx.globalAlpha=1})])};
+document.addEventListener('keydown',e=>{if(e.code==='KeyH'&&S&&S.hold&&!mOpen&&!['INPUT','TEXTAREA'].includes(e.target.tagName))releaseHold(true)});
+if(dayKey()>'2026-11-25')MPOOL.push(['hold','손잡고 {g}초 산책하기',30,60]);
+{const g=GUIDE.find(v=>v[0]==='둘이 같이');if(g)g[1]+='|손잡기: 친구를 바라보고 Space → 손잡기 신청 ♥. 친구가 "좋아!"를 누르면 손을 잡아요.|손잡은 동안 한 명이 걸으면 다른 한 명이 옆에 붙어 따라와요. 건물에도 같이 들어가요.|손 놓기: 친구를 보고 Space → 손 놓기, 또는 H 키.'}
+TIPS.push('친구를 바라보고 Space → 손잡기 신청! 손잡고 걸으면 하트가 퐁퐁 나와요.');
+const _entH=enterScene;enterScene=function(nm){S.scT=nowS();return _entH(nm)};const _exH=exitScene;exitScene=function(){S.scT=nowS();return _exH()};
+
+// ---------- 친구 낚시 · 잡은 것 보이기 ----------
+let lastFk='';
+const _ctc=catchThing;catchThing=function(id,verb,n){const r=_ctc(id,verb,n);if(r!==false){S.lc={id,t:nowS()};presT=0}return r};
+const _oth2=OTH_L;OTH_L=function(L){_oth2(L);const fk=F?F.ph:'';if(fk!==lastFk){lastFk=fk;presT=0}
+OL.forEach(q=>{const p=q.p,o=q.o;if(Array.isArray(p.fi)&&(S.scene||'out')==='out'){const d=DIR[p.d]||[0,1],bite=!!p.fi[2],bx=(+p.fi[0])*T+8,by=(+p.fi[1])*T+8+(bite?2:Math.round(Math.sin(tm*4+1)));L.push([9e8-1,()=>{ctx.strokeStyle='rgba(255,255,255,.85)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(o.x+8+d[0]*8,o.y+6);ctx.lineTo(bx,by);ctx.stroke();R('#e8453c',bx-2,by-2,4,2);R('#ffffff',bx-2,by,4,2);if(bite){R('rgba(255,255,255,.8)',bx-6,by+3,12,1);R('#e8453c',o.x+7,o.y-30,3,7);R('#e8453c',o.x+7,o.y-21,3,2)}else if(Math.floor(tm*2)%2)R('rgba(255,255,255,.6)',bx-4,by+3,8,1)}])}
+if(p.ca&&IT[p.ca]){const ic=IT[p.ca].ic;L.push([9e8,()=>{const x=Math.round(o.x+8-ic.width/2),y=Math.round(o.y-20-ic.height-Math.abs(Math.sin(tm*5))*2);R('rgba(255,255,255,.75)',x-2,y-2,ic.width+4,ic.height+4);ctx.drawImage(ic,x,y)}])}})};
+
+// ---------- 조이스틱 ----------
+(function(){const J=document.getElementById('joy'),K=document.getElementById('joyk');if(!J)return;let pid=null;const MX=40;
+const reset=()=>{pid=null;J.classList.remove('on');K.style.transform='';['up','down','left','right','run'].forEach(k=>keys[k]=false)};
+const mv=e=>{const r=J.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;let dx=e.clientX-cx,dy=e.clientY-cy;const d=Math.hypot(dx,dy);if(d>MX){dx=dx/d*MX;dy=dy/d*MX}K.style.transform=`translate(${dx}px,${dy}px)`;const nx=dx/MX,ny=dy/MX,on=d>10;
+keys.right=on&&nx>.38;keys.left=on&&nx<-.38;keys.down=on&&ny>.38;keys.up=on&&ny<-.38;keys.run=d>=MX*.95};
+J.addEventListener('pointerdown',e=>{if(mOpen||dlg)return;e.preventDefault();pid=e.pointerId;J.setPointerCapture(pid);J.classList.add('on');mv(e)});
+J.addEventListener('pointermove',e=>{if(e.pointerId===pid)mv(e)});['pointerup','pointercancel','lostpointercapture'].forEach(t=>J.addEventListener(t,e=>{if(e.pointerId===pid)reset()}));window.addEventListener('blur',reset)})();
 
 const BG=document.createElement('canvas');BG.width=MW*T;BG.height=MH*T;
 function buildBG(){const P=SPAL[season()];const b=BG.getContext('2d');const tufts=(X,Y,h,c,c2)=>{b.fillStyle=c;for(let k=0;k<3;k++){const px=(h>>(k*5))%13,py=(h>>(k*5+3))%12;b.fillRect(X+px,Y+py+1,1,2);b.fillRect(X+px+1,Y+py,1,2)}b.fillStyle=c2;b.fillRect(X+(h>>12)%15,Y+(h>>17)%15,1,1)};
