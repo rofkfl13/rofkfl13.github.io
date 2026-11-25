@@ -493,7 +493,7 @@ async function once(key,fn){if(busy.has(key))return;busy.add(key);try{await fn()
 function treeF(i){const t=S.trees[i];if(!t)return 0;const full=TREES[i].k==='palm'?2:3;return t.f===0&&nowS()>t.t?full:t.f}
 function plotG(p){const t=IT[p.c].t,now=nowS();let g=p.g0||0;const dt=Math.max(0,(now-(p.t0||now))/1000),wm=p.wm||1.6;if(p.w){const b=(Math.floor(g/t)+1)*t,need=(b-g)/wm;g=dt<=need?g+dt*wm:b+(dt-need)}else g+=dt;return Math.min(3*t,g)}
 const watered=p=>!!p.w&&Math.floor(plotG(p)/IT[p.c].t)===Math.floor((p.g0||0)/IT[p.c].t);
-const PF=['mc','wishes','pet','petLove','best','cw','sr','evc','restT','sleepDay','scene','gender','hearts','name','hair','skin','px','py','dir','coins','inv','dex','wd','eq','tools','luck','goldUnl','rew','bait','honeyT','fr','unl','sold','fresh','wb'];
+const PF=['mc','wishes','pet','petLove','best','cw','sr','evc','restT','sleepDay','scene','gender','hearts','name','hair','skin','px','py','dir','coins','inv','dex','wd','eq','tools','luck','goldUnl','rew','bait','honeyT','fr','unl','sold','fresh','wb','pz'];
 function personal(){const o={};PF.forEach(k=>{o[k]=S[k]});return JSON.parse(JSON.stringify(o))}
 function applyPersonal(d){const n=newState();d=d||{};PF.forEach(k=>{if(d[k]!==undefined&&d[k]!==null)n[k]=d[k]});const arr=v=>Array.isArray(v)?v:Object.values(v||{});
 n.inv=arr(n.inv).filter(v=>v&&IT[v[0]]&&v[1]>0);n.wd=arr(n.wd).filter(i=>IT[i]);['t_sky','b_jean'].forEach(i=>{if(!n.wd.includes(i))n.wd.push(i)});n.eq=Object.assign({hat:null,top:'t_sky',bot:'b_jean'},n.eq);
@@ -1150,6 +1150,105 @@ const GUIDE=[
 ['저장','섬은 서버에 자동 저장돼요.|이름 + 비밀번호(숫자 4개)로 어느 기기에서든 다시 들어올 수 있어요.']];
 function guideTab(nb){nb.innerHTML='<p class="muted" style="margin:0 0 6px">제목을 누르면 설명이 펼쳐져요.</p>'+GUIDE.map(([t,b],i)=>`<details ${i===1?'open':''} style="border-bottom:1px dashed #e0cba8;padding:6px 0"><summary style="font-weight:800;cursor:pointer;font-size:15px">${t}</summary>${b.split('|').map(x=>`<div style="font-size:13px;margin:4px 0 0 8px">· ${x}</div>`).join('')}</details>`).join('')}
 
+// ===== pq.js : 호숫가 광장 & 행사 =====
+const PZ={x0:26,y0:26,x1:35,y1:33};const inPZ=(x,y)=>x>=PZ.x0&&x<=PZ.x1&&y>=PZ.y0&&y<=PZ.y1;
+const STG={x0:29,x1:32,y0:26,y1:27};const onStg=(x,y)=>x>=STG.x0&&x<=STG.x1&&y>=STG.y0&&y<=STG.y1;
+const PZF={'26,26':'lamp','35,26':'lamp','26,33':'lamp','35,33':'lamp','26,28':'board','31,30':'fire','29,30':'log','33,30':'log','29,25':'back','30,25':'back','31,25':'back','32,25':'back'};
+(function(){TREES.forEach(t=>{if(inPZ(t.x,t.y)||PZF[t.x+','+t.y]){t.gone=true;OBJ[t.y*MW+t.x]=-1}});for(let i=FLW.length-1;i>=0;i--){const[x,y]=FLW[i];if(inPZ(x,y)||PZF[x+','+y]||(x===25&&(y===29||y===30)))FLW.splice(i,1)}
+for(let y=PZ.y0;y<=PZ.y1;y++)for(let x=PZ.x0;x<=PZ.x1;x++)if(!isWat(MAP[y][x]))MAP[y][x]=PATH;[[25,29],[25,30],[34,24],[34,25]].forEach(([x,y])=>{if(!isWat(MAP[y][x])&&OBJ[y*MW+x]<0)MAP[y][x]=PATH});
+for(const k in PZF){const[x,y]=k.split(',').map(Number);OBJ[y*MW+x]=4100}
+try{const m=MMB.getContext('2d');m.fillStyle='#e8dcc4';m.fillRect(PZ.x0*2,PZ.y0*2,(PZ.x1-PZ.x0+1)*2,(PZ.y1-PZ.y0+1)*2)}catch(e){}})();
+const myT=()=>[Math.floor((S.px+8)/T),Math.floor((S.py+12)/T)];
+const hereP=()=>(S.scene||'out')==='out'&&inPZ(...myT());
+const friendP=()=>others().some(q=>(q.p.sc||'out')==='out'&&inPZ(Math.floor((q.p.x+8)/T),Math.floor((q.p.y+12)/T)));
+
+// ---------- 행사 시간표 ----------
+function eveEv(t){const d=kst(t),h=d.getUTCHours(),w=d.getUTCDay();if(h<20)return null;return(w===0||w===6)?'fw':'cf'}
+const EVN={fw:'불꽃놀이 축제',cf:'캠프파이어'};
+const treR=t=>Math.floor(kst(t).getTime()/(3*3600e3));
+const TRC=(()=>{const a=[];for(let y=PZ.y0-2;y<=PZ.y1+3;y++)for(let x=PZ.x0-3;x<=PZ.x1+2;x++){if(isWat(MAP[y][x])||MAP[y][x]===SOIL||OBJ[y*MW+x]>=0||[[0,0],[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=>PZF[(x+a)+','+(y+b)])||onStg(x,y)||FLW.some(f=>f[0]===x&&f[1]===y))continue;if(x===24||y===23)continue;a.push([x,y])}return a})();
+function chests(r){r=r===undefined?treR():r;const out=[];for(let i=0;out.length<5&&i<40;i++){const c=TRC[Math.abs(hash(r,i*37+11))%TRC.length];if(!out.some(o=>o[0]===c[0]&&o[1]===c[1]))out.push(c)}return out}
+const treOpen=(r,i)=>!!(((ISL&&ISL.tre)||{})[r]||{})[i];
+function chestAt(x,y){const r=treR();return chests(r).findIndex((c,i)=>c[0]===x&&c[1]===y&&!treOpen(r,i))}
+function openChest(i){const r=treR();if(S.inv.length>=29){toast('가방을 조금 비워 주세요');return}once('tre'+r+i,async()=>{const res=await NET.tx('island/tre/'+r+'/'+i,cur=>cur?undefined:ME);if(!res.committed){toast('앗, 누가 먼저 열었어요!');return}NET.set('island/tre/'+(r-2),null);
+const sp=Object.keys(SPC);const k=wpick([['coin',45],['gfert',10],['starfrag',10],['seed',12],['deco',13],['marsh',10]]);let t;
+if(k==='coin'){const c=(3+Math.floor(Math.random()*13))*100;S.coins+=c;t=`${fmt(c)} 코인`}else{const id=k==='seed'?'seed_'+rnd(sp):k==='deco'?rnd(EXTG.slice(0,6))[0]:k;addItem(id);t=IT[id].n}
+beep(1046,.08);setTimeout(()=>beep(1568,.12),120);save(true);const left=chests(r).filter((c,j)=>j!==i&&!treOpen(r,j)).length;toast(`보물 상자에서 ${t}${/코인$/.test(t)?'을':'을(를)'} 찾았다! (남은 보물 ${left}개)`)})}
+
+// ---------- 아이템 ----------
+def('marsh','구운 마시멜로',100,mkC(12,14,r=>{r('#a07a50',5,8,2,6);r('#c88a50',2,1,8,8);r('#fff4e0',3,2,6,6);r('#e8b070',3,6,6,2);r('#ffffff',4,3,2,1)}),'use',{desc:'먹으면 10분 동안 운이 좋아져요'});
+def('fwcard','불꽃놀이 엽서',300,mkC(16,14,r=>{r('#8a6a42',0,0,16,14);r('#1e2450',1,1,14,12);[[4,4,'#ff6b81'],[10,3,'#ffd84a'],[7,8,'#8ad8ff']].forEach(([x,y,c])=>{r(c,x,y,1,1);r(c,x-2,y,1,1);r(c,x+2,y,1,1);r(c,x,y-2,1,1);r(c,x,y+2,1,1)});r('#3a4a2a',1,11,14,2)}),'decor',{desc:'광장 불꽃놀이 축제 기념품'});
+const _useQ=useItem;useItem=function(id,a){if(a==='use'&&id==='marsh'){closeModal();remItem('marsh');S.restT=Math.max(Date.now(),S.restT||0)+600000;save(true);toast('달콤해! 10분 동안 운이 좋아져요');return}return _useQ(id,a)};
+
+// ---------- 바닥 그리기 ----------
+const _bbg=buildBG;buildBG=function(){_bbg();const b=BG.getContext('2d'),f=(c,x,y,w,h)=>{b.fillStyle=c;b.fillRect(x,y,w,h)};
+for(let y=PZ.y0;y<=PZ.y1;y++)for(let x=PZ.x0;x<=PZ.x1;x++){const X=x*T,Y=y*T;f((x+y)%2?'#ece2cc':'#e0d4ba',X,Y,T,T);f('#cfc0a0',X,Y+15,T,1);f('#cfc0a0',X+15,Y,1,T);f('rgba(255,255,255,.3)',X+1,Y+1,5,1)}
+const cx=31*T+8,cy=30*T+8;for(let y=-34;y<=34;y++)for(let x=-34;x<=34;x++){const d=Math.hypot(x,y);if(d<34&&d>29)f('#c8a878',cx+x,cy+y,1,1);else if(d<=29&&d>26&&((Math.atan2(y,x)*8/Math.PI+8)|0)%2)f('#d8bc90',cx+x,cy+y,1,1)}
+f('#b8a888',PZ.x0*T,PZ.y0*T,(PZ.x1-PZ.x0+1)*T,2);f('#b8a888',PZ.x0*T,(PZ.y1+1)*T-2,(PZ.x1-PZ.x0+1)*T,2);f('#b8a888',PZ.x0*T,PZ.y0*T,2,(PZ.y1-PZ.y0+1)*T);f('#b8a888',(PZ.x1+1)*T-2,PZ.y0*T,2,(PZ.y1-PZ.y0+1)*T);
+const sx=STG.x0*T,sy=STG.y0*T,sw=(STG.x1-STG.x0+1)*T,sh=(STG.y1-STG.y0+1)*T;f('#6a4020',sx-2,sy,sw+4,sh+4);f('#b07a45',sx,sy,sw,sh);for(let y=0;y<sh;y+=5)f('#8a5a32',sx,sy+y,sw,1);for(let x=0;x<sw;x+=16)f('#9a6a3a',sx+x+(((x/16)%2)?8:0),sy,1,sh);f('#c8925a',sx,sy,sw,1);f('#5a3a20',sx-2,sy+sh,sw+4,4)};
+
+// ---------- 광장 물건 그리기 ----------
+const CHEST=mkC(14,12,r=>{r('#5a3a1a',0,2,14,10);r('#c8802a',1,3,12,8);r('#a0601a',1,6,12,1);r('#ffd23a',0,5,14,2);r('#ffd23a',6,4,2,5);r('#fff4b0',6,5,1,1);r('#e09a3a',1,3,12,1);r('#5a3a1a',2,0,10,3);r('#c8802a',3,1,8,2)});
+function pzL(L){const night=isNight(),ev=eveEv(),xm=seasonEvent()==='xmas';
+L.push([25*T+15,()=>{const X=29*T,Y=26*T;R('#5a3a20',X,Y-36,3,36);R('#5a3a20',X+61,Y-36,3,36);R('#2a3060',X+3,Y-30,58,28);for(let i=0;i<9;i++)R('#fff4a0',X+8+((i*23)%50),Y-26+((i*13)%20),1,1);R('#c8304a',X+3,Y-30,12,28);R('#c8304a',X+49,Y-30,12,28);R('#a02038',X+13,Y-30,2,28);R('#a02038',X+49,Y-30,2,28);R('#6a4020',X-2,Y-38,68,5);R('#ffd23a',X+18,Y-37,28,3);
+const an=todayEvents();ctx.font='bold 8px sans-serif';ctx.textAlign='center';ctx.fillStyle='#fff4d0';ctx.fillText(an.length?an[0].n+' 축하해!':ev?EVN[ev]:'몽글 광장',X+32,Y-12,40);ctx.textAlign='left';for(let i=0;i<8;i++){R(['#ff6b81','#ffd84a','#8ad8ff','#a8f0a0'][i%4],X+2+i*8,Y-33,4,3);R(['#ff6b81','#ffd84a','#8ad8ff','#a8f0a0'][i%4],X+3+i*8,Y-30,2,2)}
+if(an.length){const ic=IT.cake?IT.cake.ic:null;if(ic)ctx.drawImage(ic,X+32-(ic.width>>1),Y+12-ic.height)}}]);
+for(const k in PZF){const f=PZF[k];if(f==='back')continue;const[x,y]=k.split(',').map(Number),X=x*T,Y=y*T;L.push([Y+15,()=>{
+if(f==='lamp')icon(IT.slamp.ic,X,Y);
+if(f==='log'){R('rgba(0,0,0,.15)',X+1,Y+13,14,2);R('#6a4020',X+1,Y+5,14,8);R('#9a6a3a',X+2,Y+6,12,3);R('#d8b070',X+12,Y+5,3,8);R('#a0703a',X+13,Y+7,1,4)}
+if(f==='board'){R('#5a3a20',X+2,Y-2,2,17);R('#5a3a20',X+12,Y-2,2,17);R('#6a4020',X,Y-10,16,13);R('#d8a868',X+1,Y-9,14,11);R('#ffffff',X+3,Y-8,5,4);R('#ffe08a',X+9,Y-7,4,4);R('#ff9ab8',X+4,Y-3,5,3);R('#e05050',X+5,Y-8,1,1);R('#e05050',X+10,Y-7,1,1)}
+if(f==='fire'){const on=ev==='cf';const cx=X+8,cy=Y+10;[[-10,0],[-7,-3],[-2,-4],[3,-4],[7,-3],[9,0],[-8,3],[-3,4],[3,4],[8,3]].forEach(([a,b])=>{R('#7a7a80',cx+a-2,cy+b-1,4,3);R('#a8a8b0',cx+a-2,cy+b-1,3,1)});R('#5a3a1a',cx-6,cy-1,12,2);R('#7a4a2a',cx-4,cy-3,8,2);
+if(on){const fl=Math.floor(tm*10)%3;R('#ff6a2a',cx-5,cy-9-fl,10,8+fl);R('#ffb02a',cx-3,cy-12-fl,6,10);R('#fff08a',cx-1,cy-8,3,5);if(Math.floor(tm*4)%2)R('#ffb02a',cx+3,cy-15-fl,1,2)}}}])}
+const r=treR();chests(r).forEach(([x,y],i)=>{if(treOpen(r,i))return;L.push([y*T+15,()=>{R('rgba(0,0,0,.15)',x*T+2,y*T+13,12,2);ctx.drawImage(CHEST,x*T+1,y*T+3);if(Math.floor(tm*2+i)%3===0)R('#ffffff',x*T+10,y*T+3,2,2)}])});
+if(ev||xm||todayEvents().length)L.push([PZ.y0*T-1,()=>{for(const yy of[PZ.y0*T-6]){for(let x=PZ.x0*T+8;x<(PZ.x1+1)*T-8;x+=6){const sag=Math.round(Math.sin((x-PZ.x0*T)/((PZ.x1-PZ.x0)*T)*Math.PI)*6);R('#5a3a20',x,yy+sag,6,1);R(xm&&!ev?(Math.floor(tm*2+x/6)%2?'#ffd84a':'#ff6b81'):['#ff6b81','#ffd84a','#8ad8ff','#a8f0a0'][(x/6|0)%4],x+1,yy+sag+1,4,xm&&!ev?2:4)}}}]);
+const pm=(ISL&&ISL.pzmsg)||null;if(pm&&pm.m&&nowS()-(+pm.t||0)<2*864e5)L.push([9e8,()=>{const t=String(pm.m).slice(0,24),X=26*T+8;ctx.font='bold 8px sans-serif';const w=Math.min(110,ctx.measureText(t).width+8);R('rgba(255,236,244,.95)',X-w/2,28*T-24,w,11);ctx.fillStyle='#a0305a';ctx.textAlign='center';ctx.fillText(t,X,28*T-15.5,104);ctx.textAlign='left'}])}
+const _sdl2=seasonDecoL;seasonDecoL=function(L){_sdl2(L);pzL(L)};
+
+// ---------- 불꽃놀이 · 불빛 (화면 위) ----------
+let FWP=[],fwT=0,fwLast=0,NOTES=[];
+function plazaFx(){const cx=Math.max(0,Math.min(MW*T-VW,Math.round(S.px+8-VW/2))),cy=Math.max(0,Math.min(MH*T-VH,Math.round(S.py+8-VH/2)));const now=performance.now(),dt=Math.min(.1,fwLast?(now-fwLast)/1000:0);fwLast=now;const ev=eveEv();ctx.save();ctx.translate(-cx,-cy);
+if(isNight()){ctx.fillStyle='rgba(255,220,120,.22)';for(const k in PZF)if(PZF[k]==='lamp'){const[x,y]=k.split(',').map(Number);ctx.beginPath();ctx.arc(x*T+8,y*T+2,26,0,7);ctx.fill()}}
+if(ev==='cf'){ctx.fillStyle=`rgba(255,150,60,${.18+Math.sin(tm*9)*.04})`;ctx.beginPath();ctx.arc(31*T+8,30*T+6,46,0,7);ctx.fill()}
+if(ev==='fw'){fwT-=dt;if(fwT<=0){fwT=.3+Math.random()*.6;const bx=(PZ.x0-4)*T+Math.random()*(PZ.x1-PZ.x0+9)*T,by=(PZ.y0-4)*T+Math.random()*5*T,col=rnd(['#ff6b81','#ffd84a','#8ad8ff','#b48aff','#a8f0a0','#ffffff']);for(let i=0;i<48;i++){const a=i/48*Math.PI*2,s=45+Math.random()*35;FWP.push({x:bx,y:by,vx:Math.cos(a)*s,vy:Math.sin(a)*s,l:1.4,c:col})}}
+FWP.forEach(p=>{p.vy+=30*dt;p.vx*=.98;p.x+=p.vx*dt;p.y+=p.vy*dt;p.l-=dt});FWP=FWP.filter(p=>p.l>0);FWP.forEach(p=>{ctx.globalAlpha=Math.min(1,p.l);R(p.c,Math.round(p.x),Math.round(p.y),2,2)});ctx.globalAlpha=1}else FWP=[];
+NOTES.forEach(n=>{n.t+=dt;n.y-=18*dt});NOTES=NOTES.filter(n=>n.t<2);NOTES.forEach(n=>{ctx.globalAlpha=1-n.t/2;R(n.c,Math.round(n.x),Math.round(n.y),3,3);R(n.c,Math.round(n.x)+2,Math.round(n.y)-5,1,6);R(n.c,Math.round(n.x)+3,Math.round(n.y)-5,2,1)});ctx.globalAlpha=1;ctx.restore()}
+const _dst=drawStar;drawStar=function(){_dst();plazaFx()};
+
+// ---------- 행동 ----------
+function roast(){const g=S.pz||{};const n=(g.g&&g.g.ms)||0;if(n>=3){toast('오늘은 마시멜로를 다 구웠어요 (하루 3개)');return}if(!addItem('marsh')){return}S.pz.g.ms=n+1;beep(660,.05);save(true);toast(`마시멜로를 노릇노릇 구웠다! (${n+1}/3)`)}
+function stageUI(){openModal(head('무대 공연')+`<p class="muted" style="margin:0 0 8px">무대 위에서 공연해요! 하루 처음 공연하면 200 코인, 광장에 친구가 보고 있으면 +300 코인 박수!</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="gb big" data-pf="sing" style="flex:1">노래하기</button><button class="gb big" data-pf="dance" style="flex:1">춤추기</button><button class="gb big" data-pf="magic" style="flex:1">마술하기</button></div>`);mb.querySelectorAll('[data-pf]').forEach(b=>b.onclick=()=>{closeModal();perform(b.dataset.pf)})}
+function perform(k){const M={sing:[[523,659,784,880,784,659,523],'♪ 랄랄라~ 노래를 불러요!','노래를 불렀다! ♪'],dance:[[392,523,392,659,392,784],'♬ 신나게 춤을 춰요!','빙글빙글 춤을 췄다!'],magic:[[880,0,1175,0,1568],'✨ 짜잔~ 마술이에요!','짜잔! 마술 성공!']}[k];M[0].forEach((f,i)=>f&&setTimeout(()=>beep(f,.16),i*170));mySay={m:M[1],t:Date.now()};presT=0;
+for(let i=0;i<8;i++)setTimeout(()=>NOTES.push({x:S.px+2+Math.random()*12,y:S.py-10,t:0,c:rnd(['#ff6b81','#ffd84a','#8ad8ff','#b48aff'])}),i*180);if(k==='dance'){const ds=['left','down','right','up'];ds.forEach((d,i)=>setTimeout(()=>{S.dir=d},i*250+100))}
+const g=S.pz.g;let msgT=M[2];if(!g.st){g.st=1;let c=200;if(friendP()){c+=300;msgT+=' 친구가 박수를 쳐 줬어요!'}S.coins+=c;msgT+=` (+${c} 코인)`;save(true)}toast(msgT)}
+function pzBoardUI(){const ev=eveEv(),r=treR(),left=chests(r).filter((c,i)=>!treOpen(r,i)).length,nx=((r+1)*3)%24,an=todayEvents(),pm=(ISL&&ISL.pzmsg)||null,g=(S.pz&&S.pz.g)||{};const d=kst(),w=d.getUTCDay(),wk=w===0||w===6;
+let h=head('광장 게시판')+`<p style="font-size:18px;font-weight:800;margin:4px 0">${ev?`지금 ${EVN[ev]} 하는 중! (밤 12시까지)`:an.length?`오늘은 ${escH(an[0].n)}! 하루 종일 기념일 파티`:'지금은 조용한 광장이에요'}</p>
+<h3>오늘의 행사</h3><div class="row"><span style="flex:1"><b>밤 8시 ~ 12시</b> · ${wk?'불꽃놀이 축제 (주말)':'캠프파이어 (평일)'}<br><span class="muted">${wk?'광장에 오면 기념 엽서 + 500 코인':'광장에 오면 300 코인 · 모닥불에서 마시멜로 굽기 (하루 3개, 먹으면 10분 행운)'}</span></span><span>${g[wk?'fw':'cf']?'받음 ✓':''}</span></div>
+<div class="row"><span style="flex:1"><b>3시간마다</b> · 보물찾기<br><span class="muted">광장 근처에 보물 상자 5개! 먼저 여는 사람이 임자 · 다음 회차 ${nx}시</span></span><b>남은 보물 ${left}개</b></div>
+<div class="row"><span style="flex:1"><b>언제나</b> · 무대 공연<br><span class="muted">무대 위에 올라가 Space · 하루 처음 200 코인, 친구가 보면 +300</span></span><span>${g.st?'오늘 함 ✓':''}</span></div>
+<div class="row"><span style="flex:1"><b>둘이 함께</b> · 커플 보너스<br><span class="muted">저녁 행사 때 둘이 같이 광장에 있으면 각자 500 코인</span></span><span>${g.cp?'받음 ✓':''}</span></div>
+${an.length?`<div class="row"><span style="flex:1"><b>오늘의 기념일</b> · ${escH(an.map(e=>e.n).join(', '))}<br><span class="muted">광장에 오면 케이크 + 1,000 코인</span></span><span>${g.an?'받음 ✓':''}</span></div>`:''}
+<h3>광장 약속</h3>${pm&&pm.m&&nowS()-(+pm.t||0)<2*864e5?`<p style="font-size:16px;margin:4px 0">"${escH(pm.m)}" <span class="muted">— ${escH(pm.n||'?')}</span></p>`:'<p class="muted">남겨진 약속이 없어요</p>'}<div style="display:flex;gap:6px"><input id="pzm" maxlength="24" placeholder="예) 오늘 밤 9시에 광장에서 만나!" style="flex:1;padding:8px;border-radius:10px;border:2px solid #e0cba8;font-size:15px"><button class="gb" id="pzs">남기기</button></div><p class="muted" style="font-size:12px">약속은 게시판 위에 이틀 동안 떠 있어요.</p>`;
+openModal(h+SEDIV);$('pzs').onclick=()=>{const v=$('pzm').value.trim().slice(0,24);if(!v)return;NET.set('island/pzmsg',{m:v,n:S.name,t:nowS()});msg('약속을 남겼어요!');setTimeout(pzBoardUI,300)}}
+const _look3=look;look=function(){const r=_look3();if(F||(S.scene&&S.scene!=='out'))return r;if(r&&/잡기|말 걸기|소원|당겨|입질/.test(r.l))return r;const{tx,ty}=front();const ci=chestAt(tx,ty);if(ci>=0)return{l:'보물 상자 열기!',fn:()=>openChest(ci)};const f=PZF[tx+','+ty];
+if(f==='board')return{l:'광장 게시판 보기',fn:pzBoardUI};if(f==='fire')return eveEv()==='cf'?{l:'마시멜로 굽기',fn:roast}:{l:'모닥불 자리',fn:()=>toast('평일 밤 8시부터 캠프파이어를 해요')};if(f==='log')return{l:'통나무 의자',fn:()=>toast('모닥불 보기 좋은 자리다')};if(f==='lamp')return{l:'가로등',fn:()=>toast('밤이 되면 불이 켜져요')};if(f==='back')return{l:'무대 장식',fn:()=>toast('무대 위로 올라가서 공연해 보세요!')};
+const[mx,my]=myT();if(onStg(mx,my)&&(!r||r.l==='낚시하기'))return{l:'무대에서 공연하기',fn:stageUI};return r};
+
+// ---------- 참여 보상 · 알림 ----------
+function pzTick(){if(!S||!S.name||!ME)return;const d=dayKey();if(!S.pz||S.pz.d!==d)S.pz={d,g:{}};const g=S.pz.g,ev=eveEv(),out=(S.scene||'out')==='out';
+const once1=(k,t)=>{try{if(localStorage.getItem(k))return;localStorage.setItem(k,'1')}catch(e){return}toast(t)};
+if(ev&&out)once1('mongle-ev-'+d+ev,ev==='fw'?'호숫가 광장에서 불꽃놀이 축제가 시작됐어요!':'호숫가 광장에 캠프파이어가 피었어요!');
+if(out)once1('mongle-tr-'+treR(),'호숫가 광장 근처에 보물 상자 5개가 나타났어요!');
+if(!hereP())return;let got=[];
+if(ev==='fw'&&!g.fw){g.fw=1;S.coins+=500;addItem('fwcard');got.push('불꽃놀이 엽서 + 500 코인')}
+if(ev==='cf'&&!g.cf){g.cf=1;S.coins+=300;got.push('캠프파이어 300 코인')}
+if(ev&&!g.cp&&friendP()){g.cp=1;S.coins+=500;got.push('둘이 함께 와서 커플 보너스 500 코인')}
+if(todayEvents().length&&!g.an){g.an=1;S.coins+=1000;if(IT.cake)addItem('cake');got.push('기념일 파티 선물 (케이크 + 1,000 코인)')}
+if(got.length){beep(1320,.1);toast('광장 행사 참여! '+got.join(' · '));save(true)}}
+setInterval(()=>{try{pzTick()}catch(e){console.error(e)}},1000);
+const _nt2=noticeTab;noticeTab=function(nb){_nt2(nb);if(!nb)return;const ev=eveEv(),r=treR(),left=chests(r).filter((c,i)=>!treOpen(r,i)).length,w=kst().getUTCDay();nb.insertAdjacentHTML('afterbegin',`<p style="font-weight:800;color:#3a7ad0;margin:0 0 6px">호숫가 광장: ${ev?EVN[ev]+' 하는 중!':`오늘 밤 8시 ${w===0||w===6?'불꽃놀이 축제':'캠프파이어'}`} · 보물 ${left}개 남음</p>`)};
+GUIDE.splice(2,0,['호숫가 광장 · 행사','섬 한가운데 호수 옆 광장이에요. 게시판에서 오늘 행사와 시간을 봐요.|밤 8시~12시: 주말엔 불꽃놀이 축제(엽서 + 500 코인), 평일엔 캠프파이어(300 코인 + 마시멜로 굽기).|3시간마다 광장 근처에 보물 상자 5개가 생겨요. 먼저 여는 사람이 가져가요!|무대 위에 올라가 Space → 노래·춤·마술. 친구가 광장에서 보고 있으면 박수 보너스!|저녁 행사 때 둘이 같이 광장에 있으면 커플 보너스 500 코인씩.|기념일에는 무대에 이름이 걸리고, 광장에 오면 케이크 선물을 받아요.|게시판에 "광장 약속"을 남기면 이틀 동안 게시판 위에 떠 있어요.']);
+TIPS.push('호숫가 광장에서 밤 8시마다 행사가 열려요. 3시간마다 보물 상자도 나타나요!');
+
 const BG=document.createElement('canvas');BG.width=MW*T;BG.height=MH*T;
 function buildBG(){const P=SPAL[season()];const b=BG.getContext('2d');const tufts=(X,Y,h,c,c2)=>{b.fillStyle=c;for(let k=0;k<3;k++){const px=(h>>(k*5))%13,py=(h>>(k*5+3))%12;b.fillRect(X+px,Y+py+1,1,2);b.fillRect(X+px+1,Y+py,1,2)}b.fillStyle=c2;b.fillRect(X+(h>>12)%15,Y+(h>>17)%15,1,1)};
 for(let y=0;y<MH;y++)for(let x=0;x<MW;x++){const t=MAP[y][x],X=x*T,Y=y*T,h=hash(x,y),d=Math.min(x,y,MW-1-x,MH-1-y);
@@ -1189,7 +1288,7 @@ for(const k in S.plots){const[x,y]=k.split(',').map(Number);if(vis(x,y))drawPlot
 S.digs.forEach(([x,y])=>{if(!vis(x,y))return;ctx.fillStyle='#7a5a3a';for(let i=0;i<6;i++){ctx.fillRect(x*T+5+i,y*T+5+i,1,1);ctx.fillRect(x*T+10-i,y*T+5+i,1,1)}ctx.fillRect(x*T+7,y*T+12,2,1)});
 S.weeds.forEach(([x,y])=>{if(vis(x,y))icon(IT.weed.ic,x*T,y*T)});
 S.ground.forEach(([x,y,id])=>{if(!vis(x,y))return;ctx.fillStyle='rgba(0,0,0,.15)';ctx.fillRect(x*T+4,y*T+14,8,2);const ic=IT[id].ic;ctx.drawImage(ic,x*T+((16-ic.width)>>1),y*T+14-ic.height-(Math.floor(tm*2)%2))});
-const L=[];TREES.forEach((t,i)=>{if(!vis(t.x,t.y))return;L.push([t.y*T+15,()=>{const ox=shake.i===i&&shake.t>0?Math.round(Math.sin(tm*40)*1.5):0;const sp=treeSpr(t.k);const X=t.x*T+ox,Y=t.y*T+17-sp.height;ctx.drawImage(sp,X,Y);
+const L=[];TREES.forEach((t,i)=>{if(t.gone||!vis(t.x,t.y))return;L.push([t.y*T+15,()=>{const ox=shake.i===i&&shake.t>0?Math.round(Math.sin(tm*40)*1.5):0;const sp=treeSpr(t.k);const X=t.x*T+ox,Y=t.y*T+17-sp.height;ctx.drawImage(sp,X,Y);
 const f=treeF(i);if(t.k==='fruit'){const c=IT[t.fr].col,dc=dark(c,.25);[[3,5],[9,4],[6,9]].slice(0,f).forEach(([a,b])=>{ctx.fillStyle=dc;ctx.fillRect(X+a,Y+b+1,4,3);ctx.fillRect(X+a+1,Y+b,2,5);ctx.fillStyle=c;ctx.fillRect(X+a+1,Y+b+1,2,3);ctx.fillStyle='#ffffff';ctx.fillRect(X+a+1,Y+b+1,1,1)})}
 if(t.k==='palm')[[6,6],[9,6]].slice(0,f).forEach(([a,b])=>{ctx.fillStyle='#5a3a1a';ctx.fillRect(X+a,Y+b,3,3);ctx.fillStyle='#8a5a2a';ctx.fillRect(X+a,Y+b,2,2)})}])});
 ROCKS.forEach(r=>{if(vis(r.x,r.y))L.push([r.y*T+15,()=>ctx.drawImage(ROCK,r.x*T,r.y*T+16-ROCK.height)])});
