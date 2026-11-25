@@ -67,9 +67,9 @@ window.FIREBASE_CONFIG={apiKey:"AIzaSyDCdHgJnRFKUsL4ctz5t0F4w5C4li3AChs",authDom
 <script>
 'use strict';
 const $=i=>document.getElementById(i);
-const T=16,MW=80,MH=60,VW=384;let VH=256;
+const T=16,MW=80,MH=60;let VW=384;let VH=256;
 const cv=$('c'),ctx=cv.getContext('2d');
-function fitVH(){const mob=matchMedia('(max-width:600px)').matches&&innerHeight>innerWidth;let v=256;if(mob){const r=cv.getBoundingClientRect(),c=document.getElementById('ctrl'),ch=c?c.getBoundingClientRect().height:180,w=r.width||innerWidth-24,avail=innerHeight-(r.top+scrollY)-ch-24;v=Math.max(256,Math.min(640,Math.floor(384*avail/w/16)*16))}if(v!==VH){VH=v;cv.height=VH;ctx.imageSmoothingEnabled=false}}
+function fitVH(){const mob=matchMedia('(max-width:600px)').matches&&innerHeight>innerWidth;let v=256,vw=384;if(mob){vw=window.MZ||272;const r=cv.getBoundingClientRect(),c=document.getElementById('ctrl'),ch=c?c.getBoundingClientRect().height:180,w=r.width||innerWidth-24,avail=innerHeight-(r.top+scrollY)-ch-24;v=Math.max(192,Math.min(640,Math.floor(vw*avail/w/16)*16))}if(v!==VH||vw!==VW){VH=v;VW=vw;cv.width=VW;cv.height=VH;ctx.imageSmoothingEnabled=false}}
 fitVH();{let ft=0;addEventListener('resize',()=>{clearTimeout(ft);ft=setTimeout(fitVH,250)});addEventListener('orientationchange',()=>setTimeout(fitVH,400))}
 let tm=0;
 function rng(s){return()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296}}
