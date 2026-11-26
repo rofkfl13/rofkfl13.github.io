@@ -1023,7 +1023,7 @@ st.forEach(([id,p,lim])=>{const left=lim-(S.wb.b[id]||0),it=IT[id];h+=`<div clas
 openModal(h+SEDIV);mb.querySelectorAll('[data-wb]').forEach(b=>b.onclick=()=>{const id=b.dataset.wb,p=+b.dataset.p;if(S.coins<p){msg('코인이 부족해요');return}if(!addItem(id)){msg('가방이 꽉 찼어요');return}S.coins-=p;S.wb.b[id]=(S.wb.b[id]||0)+1;beep(1200,.05);save(true);wanderUI();msg(`${IT[id].n}을(를) 샀어요! 고마워요~`)})}
 const _talk=talk;talk=function(n){if(n&&n.id==='wander'){say(n.name,['안녕~ 바람 따라 떠도는 상인 여울이야!'],wanderUI);return}return _talk(n)};
 const _sdl=seasonDecoL;seasonDecoL=function(L){_sdl(L);if(wHere){const[x,y]=WAND.fx;L.push([y*T+15,()=>ctx.drawImage(CART,(x+1)*T-2,y*T+16-CART.height)])}
-S.decor.forEach(([x,y,id])=>{if(id==='sign'){const t=signTxt(x+','+y);if(t)L.push([9e8,()=>{ctx.font='bold 8px sans-serif';const w=Math.min(90,ctx.measureText(t).width+6),X=x*T+8-w/2,Y=y*T-12;R('rgba(255,250,235,.92)',X,Y,w,11);ctx.fillStyle='#5a3a20';ctx.textAlign='center';ctx.fillText(t,x*T+8,Y+8.5,84);ctx.textAlign='left'}])}})};
+S.decor.forEach(([x,y,id])=>{if(id==='sign'){const t=signTxt(x+','+y);if(t)L.push([9e8,()=>wtxt(x*T+8,y*T-2,t,'sign')])}})};
 
 // ---------- 몽글 식당 ----------
 const REST=[[36,17],[36,25],[44,17]].map(([x,y])=>({x,y})).find(({x,y})=>{for(let j=y;j<y+4;j++)for(let i=x;i<x+4;i++){if(OBJ[j*MW+i]>=0||isWat(MAP[j][i])||MAP[j][i]===SOIL)return false}return true})||{x:36,y:17};
@@ -1073,7 +1073,7 @@ function custTick(dt){cuT-=dt;const lv=restLv();if(cuT<=0){cuT=(20-lv*2.5)*(.7+M
 CU.forEach(c=>{c.t+=dt;if(c.st==='in'||c.st==='out'){const p=c.path[0];if(!p){if(c.st==='in'){c.st='sit';c.t=0}else c.gone=true;return}const tx=p[0]*T,ty=p[1]*T,dx=tx-c.x,dy=ty-c.y,d=Math.hypot(dx,dy),sp=42*dt;if(d<=sp){c.x=tx;c.y=ty;c.path.shift()}else{c.x+=dx/d*sp;c.y+=dy/d*sp}}
 else if(c.st==='sit'){if(c.t>20&&!c.tried){c.tried=true;serveStock(c,false)}if(c.t>c.pat)leaveC(c,false)}else if(c.st==='eat'&&c.t>5)leaveC(c,true)});CU=CU.filter(c=>!c.gone)}
 function leaveC(c,happy){const[sx]=SEATS[c.seat];c.st='out';c.happy=happy;c.t=0;c.path=[[sx,7],[8,7],[8,10]];if(!happy)toast('손님이 기다리다 돌아갔어요…')}
-function serve(c){if(c.st!=='sit')return;const b='d_'+c.ord,g=[b+'_g',b+'_s',b+'_b',b].find(i=>cnt(i));if(g){remItem(g);const pay=dishPay(g),tip=Math.round(pay*.1/10)*10;S.coins+=pay+tip;NET.tx('island/rest/sold',v=>(+v||0)+1).catch(()=>{});served(c,g);toast(`${IT[g].n} 대접! ${fmt(pay)} 코인 + 팁 ${fmt(tip)}`);save(true);return}serveStock(c,true)}
+function serve(c){if(c.st!=='sit')return;const b='d_'+c.ord,g=dishFind(b);if(g){remItem(g);const pay=dishPay(g),tip=Math.round(pay*.1/10)*10;S.coins+=pay+tip;NET.tx('island/rest/sold',v=>(+v||0)+1).catch(()=>{});served(c,g);toast(`${IT[g].n} 대접! ${fmt(pay)} 코인 + 팁 ${fmt(tip)}`);save(true);return}serveStock(c,true)}
 function serveStock(c,me){const b='d_'+c.ord;once('sv'+c.seat,async()=>{let had=null;const r=await NET.tx('island/rest/stock',cur=>{had=null;if(!cur||typeof cur!=='object')return undefined;const ks=Object.keys(cur).filter(k=>Array.isArray(cur[k])&&IT[cur[k][0]]&&(cur[k][0]===b||IT[cur[k][0]].base===b));if(!ks.length)return undefined;ks.sort((x,y)=>dq(cur[y][0])-dq(cur[x][0]));had=cur[ks[0]];delete cur[ks[0]];return cur});
 if(!(r.committed&&had)){if(me)toast(`${jo(IT[b].n,'이','가')} 없어요. 주방에서 만들어 대접해요`);return}if(c.st!=='sit')return;const pay=dishPay(had[0]);await NET.tx('island/rest/earn/'+had[1],v=>(+v||0)+pay);NET.tx('island/rest/sold',v=>(+v||0)+1).catch(()=>{});if(me){const tip=Math.round(pay*.08/10)*10;S.coins+=tip;save(true);toast(`진열장의 ${IT[had[0]].n} 대접! 매출 ${fmt(pay)} · 팁 ${fmt(tip)}`)}else toast(`손님이 진열장의 ${IT[had[0]].n}을(를) 사 갔어요`);served(c,had[0])})}
 function served(c,id){c.st='eat';c.t=0;c.got=id;beep(1100,.06);NET.tx('island/rest/rep',v=>(+v||0)+(dq(id)===2?2:1)).catch(()=>{});mHook('serve')}
@@ -1154,7 +1154,7 @@ const GUIDE=[
 ['계절 · 특산품','봄 딸기·양배추·아스파라거스 / 여름 토마토·옥수수·수박·멜론·파인애플 / 가을 호박·감자·가지·고구마 / 겨울 무·당근·시금치|제철 작물은 시세 +25%, 정성 +1이에요.|특산품(아스파라거스·파인애플·고구마·시금치)은 제철에만 펭돌이 가게에서 씨앗을 팔아요.|다른 계절 특산품 씨앗은 떠돌이 상인이 가끔 팔아요.'],
 ['떠돌이 상인 여울이','토요일엔 꼭 오고, 다른 날에도 가끔 광장 오른쪽에 수레를 끌고 와요.|오늘 왔는지는 섬 소식 공지에서 볼 수 있어요.|다른 계절 특산품 씨앗, 황금 비료, 희귀 가구(피아노·분수·별빛 램프·황금 의자·어항)를 팔아요.|하루에 살 수 있는 개수가 정해져 있어요.'],
 ['섬 꾸미기','펭돌이 가게 → 섬 꾸미기 탭에서 사요.|가방에서 아이템 누르고 "앞에 놓기". 바라보고 Space로 다시 집어 들 수 있어요.|돌길·벽돌길·피크닉 매트는 위로 걸어 다닐 수 있어요.|가로등은 밤에 불이 켜져요.|팻말은 놓은 뒤 글을 쓸 수 있고, 글이 팻말 위에 보여요.|나무 다리는 강물을 바라보고 놓아요. 강은 2칸이라 다리 2개가 필요해요.'],
-['우리 집 · 집 넓히기','집 안에서 가방 → 가구 → 앞에 놓기. 침대·소파·테이블·러그·피아노는 2칸이에요.|침대에 눕기, 소파에 앉기, TV 보기, 피아노 치기가 돼요.|벽지·바닥은 펭돌이 가게 벽지·바닥 탭에서 바꿔요.|집 안 벽에 걸린 파란 설계도에서 둘이 코인을 같이 모아 집을 넓혀요.|넓은 집 30,000 코인 → 방 두 개 집 60,000 코인 (누가 얼마 냈는지도 보여요)'],
+['우리 집 · 집 넓히기','집 안에서 가방 → 가구 → 앞에 놓기. 침대·소파·테이블·러그·피아노는 2칸이에요.|침대에 눕기, 소파에 앉기, TV 보기, 피아노 치기가 돼요.|벽지·바닥은 펭돌이 가게 벽지·바닥 탭에서 바꿔요.|집 안 벽에 걸린 파란 설계도에서 둘이 코인을 같이 모아 집을 넓혀요.|넓은 집 80,000 코인 → 방 두 개 집 150,000 코인 (누가 얼마 냈는지도 보여요)'],
 ['둘이 같이','커플 미션: 매일 3개, 둘이 같이 채우면 각자 보상을 받아요.|친구를 바라보고 Space → 인사·칭찬·하트. 가방에서 선물도 보낼 수 있어요.|우체통에서 편지를 쓰고, 동물 친구 편지도 받아요.|맑은 밤 별똥별이 보이면 Space로 소원! 다음 날 선물이 와요.'],
 ['저장','섬은 서버에 자동 저장돼요.|이름 + 비밀번호(숫자 4개)로 어느 기기에서든 다시 들어올 수 있어요.']];
 function guideTab(nb){nb.innerHTML='<p class="muted" style="margin:0 0 6px">제목을 누르면 설명이 펼쳐져요.</p>'+GUIDE.map(([t,b],i)=>`<details ${i===1?'open':''} style="border-bottom:1px dashed #e0cba8;padding:6px 0"><summary style="font-weight:800;cursor:pointer;font-size:15px">${t}</summary>${b.split('|').map(x=>`<div style="font-size:13px;margin:4px 0 0 8px">· ${x}</div>`).join('')}</details>`).join('')}
@@ -1200,7 +1200,7 @@ const sx=STG.x0*T,sy=STG.y0*T,sw=(STG.x1-STG.x0+1)*T,sh=(STG.y1-STG.y0+1)*T;f('#
 const CHEST=mkC(14,12,r=>{r('#5a3a1a',0,2,14,10);r('#c8802a',1,3,12,8);r('#a0601a',1,6,12,1);r('#ffd23a',0,5,14,2);r('#ffd23a',6,4,2,5);r('#fff4b0',6,5,1,1);r('#e09a3a',1,3,12,1);r('#5a3a1a',2,0,10,3);r('#c8802a',3,1,8,2)});
 function pzL(L){const night=isNight(),ev=eveEv(),xm=seasonEvent()==='xmas';
 L.push([25*T+15,()=>{const X=29*T,Y=26*T;R('#5a3a20',X,Y-36,3,36);R('#5a3a20',X+61,Y-36,3,36);R('#2a3060',X+3,Y-30,58,28);for(let i=0;i<9;i++)R('#fff4a0',X+8+((i*23)%50),Y-26+((i*13)%20),1,1);R('#c8304a',X+3,Y-30,12,28);R('#c8304a',X+49,Y-30,12,28);R('#a02038',X+13,Y-30,2,28);R('#a02038',X+49,Y-30,2,28);R('#6a4020',X-2,Y-38,68,5);R('#ffd23a',X+18,Y-37,28,3);
-const an=todayEvents();ctx.font='bold 8px sans-serif';ctx.textAlign='center';ctx.fillStyle='#fff4d0';ctx.fillText(an.length?an[0].n+' 축하해!':ev?EVN[ev]:'몽글 광장',X+32,Y-12,40);ctx.textAlign='left';for(let i=0;i<8;i++){R(['#ff6b81','#ffd84a','#8ad8ff','#a8f0a0'][i%4],X+2+i*8,Y-33,4,3);R(['#ff6b81','#ffd84a','#8ad8ff','#a8f0a0'][i%4],X+3+i*8,Y-30,2,2)}
+const an=todayEvents();wtxt(X+32,Y-15,an.length?an[0].n+' 축하해!':ev?EVN[ev]:'몽글 광장','ban');ctx.textAlign='left';for(let i=0;i<8;i++){R(['#ff6b81','#ffd84a','#8ad8ff','#a8f0a0'][i%4],X+2+i*8,Y-33,4,3);R(['#ff6b81','#ffd84a','#8ad8ff','#a8f0a0'][i%4],X+3+i*8,Y-30,2,2)}
 if(an.length){const ic=IT.cake?IT.cake.ic:null;if(ic)ctx.drawImage(ic,X+32-(ic.width>>1),Y+12-ic.height)}}]);
 for(const k in PZF){const f=PZF[k];if(f==='back')continue;const[x,y]=k.split(',').map(Number),X=x*T,Y=y*T;L.push([Y+15,()=>{
 if(f==='lamp')icon(IT.slamp.ic,X,Y);
@@ -1210,7 +1210,7 @@ if(f==='fire'){const on=ev==='cf';const cx=X+8,cy=Y+10;[[-10,0],[-7,-3],[-2,-4],
 if(on){const fl=Math.floor(tm*10)%3;R('#ff6a2a',cx-5,cy-9-fl,10,8+fl);R('#ffb02a',cx-3,cy-12-fl,6,10);R('#fff08a',cx-1,cy-8,3,5);if(Math.floor(tm*4)%2)R('#ffb02a',cx+3,cy-15-fl,1,2)}}}])}
 const r=treR();chests(r).forEach(([x,y],i)=>{if(treOpen(r,i))return;L.push([y*T+15,()=>{R('rgba(0,0,0,.15)',x*T+2,y*T+13,12,2);ctx.drawImage(CHEST,x*T+1,y*T+3);if(Math.floor(tm*2+i)%3===0)R('#ffffff',x*T+10,y*T+3,2,2)}])});
 if(ev||xm||todayEvents().length)L.push([PZ.y0*T-1,()=>{for(const yy of[PZ.y0*T-6]){for(let x=PZ.x0*T+8;x<(PZ.x1+1)*T-8;x+=6){const sag=Math.round(Math.sin((x-PZ.x0*T)/((PZ.x1-PZ.x0)*T)*Math.PI)*6);R('#5a3a20',x,yy+sag,6,1);R(xm&&!ev?(Math.floor(tm*2+x/6)%2?'#ffd84a':'#ff6b81'):['#ff6b81','#ffd84a','#8ad8ff','#a8f0a0'][(x/6|0)%4],x+1,yy+sag+1,4,xm&&!ev?2:4)}}}]);
-const pm=(ISL&&ISL.pzmsg)||null;if(pm&&pm.m&&nowS()-(+pm.t||0)<2*864e5)L.push([9e8,()=>{const t=String(pm.m).slice(0,24),X=26*T+8;ctx.font='bold 8px sans-serif';const w=Math.min(110,ctx.measureText(t).width+8);R('rgba(255,236,244,.95)',X-w/2,28*T-24,w,11);ctx.fillStyle='#a0305a';ctx.textAlign='center';ctx.fillText(t,X,28*T-15.5,104);ctx.textAlign='left'}])}
+const pm=(ISL&&ISL.pzmsg)||null;if(pm&&pm.m&&nowS()-(+pm.t||0)<2*864e5)L.push([9e8,()=>{wtxt(26*T+8,28*T-14,String(pm.m).slice(0,40),'msg')}])}
 const _sdl2=seasonDecoL;seasonDecoL=function(L){_sdl2(L);pzL(L)};
 
 // ---------- 불꽃놀이 · 불빛 (화면 위) ----------
@@ -1327,7 +1327,7 @@ if(!cur.nx||t>=+cur.nx){const used=Object.keys(cs).map(id=>cs[id].seat);const fr
 cur.c=cs;return ch?cur:undefined}).catch(()=>{})}
 function claimStock(c){if(c._cl)return;c._cl=1;NET.tx('island/rest/cq/c/'+c.id+'/tr',v=>v?undefined:1).then(r=>{if(r&&r.committed)serveStock(c,false)}).catch(()=>{})}
 async function claimCust(c,dish){const r=await NET.tx('island/rest/cq/c/'+c.id,cur=>{if(!cur||cur.st==='eat')return undefined;const d=cuDerive(c.id,cur,nowS());if(!d||d.st!=='sit')return undefined;cur.st='eat';cur.te=nowS();cur.got=dish;return cur});return!!(r&&r.committed)}
-function serve(c){if(c.st!=='sit')return;const b='d_'+c.ord,g=[b+'_g',b+'_s',b+'_b',b].find(i=>cnt(i));if(!g){serveStock(c,true);return}
+function serve(c){if(c.st!=='sit')return;const b='d_'+c.ord,g=dishFind(b);if(!g){serveStock(c,true);return}
 once('sv'+c.id,async()=>{if(!(await claimCust(c,g))){toast('앗, 이미 다른 사람이 대접했어요!');return}if(!cnt(g))return;remItem(g);const pay=dishPay(g),tip=Math.round(pay*.1/10)*10;S.coins+=pay+tip;NET.tx('island/rest/sold',v=>(+v||0)+1).catch(()=>{});served(c,g);toast(`${IT[g].n} 대접! ${fmt(pay)} 코인 + 팁 ${fmt(tip)}`);save(true)})}
 function serveStock(c,me){const b='d_'+c.ord;once('ss'+c.id,async()=>{const sk=stockL().find(([k,v])=>v[0]===b||IT[v[0]].base===b);if(!sk){if(me)toast(`${jo(IT[b].n,'이','가')} 없어요. 주방에서 만들어 대접해요`);return}
 if(!(await claimCust(c,sk[1][0]))){if(me)toast('앗, 이미 다른 사람이 대접했어요!');return}
@@ -1644,7 +1644,7 @@ SC.m_fish2={w:24,h:10,top:4,doors:[11,12],back:['m_fish',22,4],name:'수족관 2
 Object.assign(FIXS,{m_fish2:{'1,8':'palm','22,8':'palm','8,7':'bench','15,7':'bench'},m_bug2:{'1,8':'palm','20,8':'palm','10,7':'bench'},m_fossil2:{'1,9':'palm','16,9':'palm'},m_nature2:{'1,8':'palm','22,8':'palm','11,7':'bench'}});
 {const fx=FIXS.m_fish;if(fx['20,8']){delete fx['20,8'];fx['22,8']='palm'}const fb=FIXS.m_bug;if(fb['18,8']){delete fb['18,8'];fb['20,8']='palm'}}
 MUSEUMS.push('m_fish2','m_bug2','m_fossil2','m_nature2');
-{const _sb=sceneBG;sceneBG=function(sc,night){_sb(sc,night);const lab={m_fish:'2관 →',m_bug:'2관 →',m_fossil:'2관 →',m_nature:'2관 →'}[S.scene];if(lab&&sc.arch){for(const ax in sc.arch){const X=+ax*T;ctx.font='bold 7px sans-serif';ctx.fillStyle='#fff8e8';R('#8a6a42',X-2,sc.top*T-30,20,9);ctx.fillStyle='#fff8e8';ctx.textAlign='center';ctx.fillText('2관',X+8,sc.top*T-23);ctx.textAlign='left'}}}}
+{const _sb=sceneBG;sceneBG=function(sc,night){_sb(sc,night);const lab={m_fish:'2관 →',m_bug:'2관 →',m_fossil:'2관 →',m_nature:'2관 →'}[S.scene];if(lab&&sc.arch){for(const ax in sc.arch){const X=+ax*T;wtxt(X+8,sc.top*T-21,'2관 →','tag')}}}}
 GUIDE.splice(5,0,['박물관 2관 · 새 도감','박물관 수족관·곤충관·화석관·자연관 오른쪽 끝 벽에 "2관" 입구가 생겼어요.|2관엔 새로 생긴 물고기 25종, 곤충 21종, 화석 10종, 해변 6종, 버섯 6종, 작물 6종, 들꽃·식물 10종이 전시돼요.|들꽃·식물은 풀밭에 가끔 피어나요. 바라보고 Space로 따요 (희귀한 무지개 장미도!).|새 작물(양파·마늘·고추·오이·브로콜리·블루베리)은 랜덤 씨앗에서 나오고, 한 번 팔면 펭돌이 가게에서 씨앗을 팔아요.|땅에 있는 조개·버섯·꽃은 이제 Space를 눌러야 주워져요.']);
 TIPS.push('박물관 각 관 오른쪽 끝에 2관 입구가 있어요!','풀밭에 피어난 들꽃을 Space로 따서 도감을 채워요.');
 
@@ -2114,6 +2114,28 @@ TIPS.push('아주 드물게 거대 작물이 자라요! 둘이 한 번씩 물을
 TIPS.push('화석을 파면 가끔 공룡 뼈 조각이 나와요. 머리·몸통·꼬리를 박물관에 기증하면 공룡관에 짜잔! 하고 완성돼요.');
 TIPS.push('광장 왼쪽 위 소원 우물에 코인 500개를 던지면 사탕 비, 황금 물고기 날 같은 신기한 일이 생겨요.');
 TIPS.push('끼끼와 손잡고 걸으면 발자국이 하트 모양으로 남아요.');
+// ---------- 물가: 귀한 물고기·곤충·화석 값 낮추기 + 집·시설 값 올리기 ----------
+Object.values(IT).forEach(it=>{if((it.cat==='fish'||it.cat==='bug'||it.cat==='fossil')&&it.p>3000){it.p0=it.p;it.p=Math.round((3000+2000*Math.log10(it.p/3000)/Math.log10(15))/10)*10}});
+try{HLV[1].cost=80000;HLV[2].cost=150000}catch(e){}
+try{FAC.gh.cost=80000;FAC.gh.up=50000;FAC.bee.cost=50000;FAC.pier.cost=65000;FAC.cafe.cost=100000}catch(e){}
+// ---------- 생선 요리: 넣은 물고기에 따라 이름·값이 달라져요 ----------
+const FRCP=RCP.filter(r=>r[2].some(s=>s[0]==='@fish'));
+const FSUF={fgrill:' 구이',sushi:' 초밥'};
+const fishDishId=(rid,fid)=>'d_'+rid+'_'+fid;
+function defFishDish(rid,fid){const id=fishDishId(rid,fid);if(IT[id])return id;const r=RCP.find(v=>v[0]===rid),f=IT[fid],base=IT['d_'+rid];if(!r||!f||!base)return null;
+const v=r[2].reduce((t,[i,n])=>t+(i==='@fish'?f.p:ICAT[i]?ICAT[i][2]:(IT[i]?IT[i].p:0))*n,0);const nm=f.n+(FSUF[rid]||(' '+base.n));
+def(id,nm,Math.max(base.p,Math.round(v*(f.r>=4?1.15:1.4)/10)*10),base.ic,'dish',{base:'d_'+rid,r:f.r});return id}
+[...FISH.map(f=>f[0]),...MYF.map(f=>f[0])].forEach(fid=>FRCP.forEach(r=>defFishDish(r[0],fid)));
+{const _ck=cook;cook=function(rid){const r=RCP.find(v=>v[0]===rid);const fs=r&&r[2].find(s=>s[0]==='@fish');if(!fs)return _ck(rid);
+const need=fs[1];let fishes=S.inv.filter(([i,n])=>IT[i]&&IT[i].cat==='fish'&&n>=need).map(v=>v[0]);if(!fishes.length)return need>1?`같은 물고기 ${need}마리가 필요해요`:'물고기가 없어요';
+fishes.sort((a,b)=>IT[a].p-IT[b].p);if(cookGood)fishes.reverse();const fid=fishes[0];
+const others=r[2].filter(s=>s[0]!=='@fish').map(s=>pickIng(s,cookGood));if(others.some(p=>!p))return'재료가 모자라요';const did=defFishDish(rid,fid);
+if(!cnt(did)&&S.inv.length>=30&&cnt(fid)>need)return'가방이 꽉 찼어요';remItem(fid,need);others.flat().forEach(([i,u])=>remItem(i,u));addItem(did);beep(880,.06);setTimeout(()=>beep(1320,.08),110);mHook('cook');save(true);return`${IT[did].n} 완성! (${fmt(IT[did].p)} 코인)`}}
+function dishFind(b){const c=S.inv.filter(([i])=>i===b||(IT[i]&&IT[i].base===b)).map(v=>v[0]);c.sort((x,y)=>IT[y].p-IT[x].p);return c[0]}
+TIPS.push('생선구이·초밥은 넣은 물고기에 따라 "다랑어 구이"처럼 이름과 값이 달라져요. 비싼 물고기일수록 비싼 요리!');
+function fishPick(rid){const r=RCP.find(v=>v[0]===rid),fs=r[2].find(s=>s[0]==='@fish');const f=S.inv.filter(([i,n])=>IT[i]&&IT[i].cat==='fish'&&n>=fs[1]).map(v=>v[0]).sort((a,b)=>IT[a].p-IT[b].p);if(cookGood)f.reverse();return f[0]}
+{const _cu=cookUI;cookUI=function(){_cu();FRCP.forEach(r=>{const b=mb.querySelector(`[data-ck="${r[0]}"]`);if(!b)return;const sp=b.previousElementSibling,fid=fishPick(r[0]);if(fid){const d=defFishDish(r[0],fid);sp.innerHTML=`<span style="font-size:12px">${IT[d].n}</span><br>${fmt(IT[d].p)}`;sp.style.textAlign='right'}else{const need=r[2].find(s=>s[0]==='@fish')[1];sp.innerHTML=`<span class="muted" style="font-size:12px">${need>1?'같은 물고기 '+need+'마리':'물고기 필요'}</span>`;b.disabled=true;b.closest('.row').style.opacity='.5'}});
+const cg=$('cg');if(cg){const o=cg.onchange;cg.onchange=e=>{o(e);cookUI()}}}}
 
 // ===== pj.js : 하늘 이벤트 (유성우 · 오로라 · 무지개 · 별자리 망원경) =====
 PF.push('mtW','cstD');
@@ -2262,6 +2284,55 @@ TIPS.push('안개 낀 아침(6~10시)엔 부두 끝에서 안개 섬으로 건�
 
 // 알림 글자와 행동 안내가 겹치지 않게 (모바일)
 setInterval(()=>{const tb=$('toast'),hn=$('hint');if(!tb||!hn)return;if(getComputedStyle(tb).top!=='auto'){tb.style.bottom='';return}const hb=parseFloat(getComputedStyle(hn).bottom)||6;const h=hn.style.display!=='none'&&hn.offsetHeight?hb+hn.offsetHeight+6:10;tb.style.bottom=h+'px'},120);
+// 키보드 방향키를 오래 누르면 자동 달리기
+{const KD=new Set(),DK=['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyW','KeyA','KeyS','KeyD'];let since=0,shift=false,auto=false;
+addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;if(e.code==='ShiftLeft'||e.code==='ShiftRight')shift=true;if(DK.includes(e.code)){if(!KD.size)since=performance.now();KD.add(e.code)}});
+addEventListener('keyup',e=>{if(e.code==='ShiftLeft'||e.code==='ShiftRight')shift=false;KD.delete(e.code);if(!KD.size&&auto){auto=false;if(!shift)keys.run=false}});
+addEventListener('blur',()=>{KD.clear();if(auto){auto=false;keys.run=false}});
+setInterval(()=>{if(KD.size&&!mOpen&&performance.now()-since>600){if(!keys.run){keys.run=true;auto=true}}},50)}
+TIPS.push('키보드 방향키를 0.6초 넘게 꾹 누르고 있으면 저절로 달려요. (Shift를 눌러도 달려요)');
+
+// ===== po.js : 집 수납 가구 (옷장 · 냉장고 · 귀중품 상자) =====
+const STOR={wardrobe:{t:'wd',n:'옷장',cap:80,ok:id=>['hat','top','bot'].includes(IT[id].cat),why:'옷·모자만 넣을 수 있어요'},
+fridge:{t:'fr',n:'냉장고',cap:100,ok:id=>['crop','fruit','mush','dish','food','animal','fish'].includes(IT[id].cat)||id==='honey',why:'음식만 넣을 수 있어요 (곤충·화석은 안 돼요)'},
+vchest:{t:'ch',n:'귀중품 상자',cap:60,ok:id=>!['seed'].includes(IT[id].cat),why:'씨앗은 못 넣어요'}};
+def('wardrobe','옷장',3000,mkC(16,24,c=>{c('#5a3a22',1,1,14,22);c('#a8744a',2,2,12,20);c('#8a5a34',7,3,2,18);c('#c8945a',3,3,3,18);c('#c8945a',10,3,3,18);c('#ffd84a',5,11,1,3);c('#ffd84a',10,11,1,3);c('#5a3a22',2,22,2,2);c('#5a3a22',12,22,2,2);c('#e8c090',3,1,10,1)}),'decor',{buy:12000});
+def('fridge','냉장고',3700,mkC(16,24,c=>{c('#7a8a98',1,1,14,22);c('#e8f0f8',2,2,12,20);c('#c8d4e0',2,9,12,1);c('#a8b4c0',11,4,1,4);c('#a8b4c0',11,12,1,6);c('#ffffff',3,3,3,5);c('#7ad0ff',4,19,3,2);c('#ff8ab0',8,19,2,2);c('#5a6a78',2,22,12,1)}),'decor',{buy:15000});
+def('vchest','귀중품 상자',5000,mkC(16,14,c=>{c('#4a2a14',0,2,16,12);c('#8a4a24',1,3,14,10);c('#6a3a1a',1,3,14,3);c('#ffd84a',0,6,16,2);c('#ffd84a',2,3,1,10);c('#ffd84a',13,3,1,10);c('#ffe88a',6,5,4,5);c('#4a2a14',7,7,2,2);c('#fff6c0',1,6,3,1)}),'decor',{buy:20000});
+DECOR.push(['wardrobe','옷장',12000],['fridge','냉장고',15000],['vchest','귀중품 상자',20000]);
+const storData=t=>(((ISL&&ISL.stor)||{})[t])||{};
+const storUnits=d=>Object.values(d).reduce((a,l)=>a+(Array.isArray(l)?l.reduce((x,b)=>x+(+b[0]||0),0):0),0);
+function storUI(kind){const S0=STOR[kind],d=storData(S0.t),used=storUnits(d);
+let h=head(`${S0.n} · ${used}/${S0.cap}`);h+=`<p class="muted" style="font-size:13px;margin:0 0 6px">${S0.why}${kind==='fridge'?' · 냉장고 안에서는 작물이 시들지 않아요':''} · 끼끼와 같이 써요</p>`;
+const inS=Object.keys(d).filter(id=>IT[id]&&storUnits({[id]:d[id]})>0);
+h+=`<h3 style="margin:8px 0 4px">${S0.n} 안</h3>`+(inS.length?inS.map(id=>{const n=storUnits({[id]:d[id]});return`<div class="row"><img src="${url(id)}"><span style="flex:1">${IT[id].n} x${n}</span><button class="gb" data-so="${id}" data-n="1">1개</button>${n>1?`<button class="gb" data-so="${id}" data-n="${n}">전부</button>`:''}</div>`}).join(''):'<p class="muted" style="font-size:13px">비어 있어요</p>');
+const bag=S.inv.filter(([id])=>IT[id]&&S0.ok(id));
+h+=`<h3 style="margin:10px 0 4px">가방에서 넣기</h3>`+(bag.length?bag.map(([id,n])=>`<div class="row"><img src="${url(id)}"><span style="flex:1">${IT[id].n} x${n}</span><button class="gb" data-si="${id}" data-n="1">1개</button>${n>1?`<button class="gb" data-si="${id}" data-n="${n}">전부</button>`:''}</div>`).join(''):'<p class="muted" style="font-size:13px">넣을 수 있는 게 가방에 없어요</p>');
+h+='<div id="ste" style="color:#c0503a;font-size:13px;min-height:16px;margin-top:6px"></div>';openModal(h);
+mb.querySelectorAll('[data-si]').forEach(b=>b.onclick=()=>storPut(kind,b.dataset.si,+b.dataset.n));mb.querySelectorAll('[data-so]').forEach(b=>b.onclick=()=>storTake(kind,b.dataset.so,+b.dataset.n))}
+function storPut(kind,id,n){const S0=STOR[kind];if(!S0.ok(id)){$('ste').textContent=S0.why;return}n=Math.min(n,cnt(id));if(n<=0)return;
+let ages=[];if(perish(id)){const q=frq(id);let k=n;for(const b of q){if(k<=0)break;const u=Math.min(k,b[1]);ages.push([u,Math.max(0,Date.now()-b[0])]);k-=u}if(k>0)ages.push([k,0])}else ages=[[n,0]];
+once('st'+S0.t,async()=>{const r=await NET.tx('island/stor/'+S0.t,cur=>{cur=cur&&typeof cur==='object'?cur:{};if(storUnits(cur)+n>S0.cap)return undefined;const l=Array.isArray(cur[id])?cur[id]:[];cur[id]=l.concat(ages);return cur});
+if(!r.committed){$("ste").textContent=`${jo(S0.n,"이","가")} 꽉 찼어요`;return}remItem(id,n);beep(700,.05);save(true);storUI(kind)})}
+function storTake(kind,id,n){const S0=STOR[kind];if(!cnt(id)&&S.inv.length>=30){$('ste').textContent='가방이 꽉 찼어요';return}let got=[];
+once('st'+S0.t,async()=>{const r=await NET.tx('island/stor/'+S0.t,cur=>{got=[];if(!cur||!Array.isArray(cur[id]))return undefined;let k=n;const l=cur[id].map(b=>[+b[0],+b[1]]);while(k>0&&l.length){const u=Math.min(k,l[0][0]);got.push([u,l[0][1]]);l[0][0]-=u;k-=u;if(l[0][0]<=0)l.shift()}if(!got.length)return undefined;if(l.length)cur[id]=l;else delete cur[id];return cur});
+if(!r.committed||!got.length)return;got.forEach(([u,age])=>{if(addItem(id,u)&&perish(id)){const q=S.fresh&&S.fresh[id];if(q&&q.length)q[q.length-1][0]=Date.now()-age}});beep(900,.05);save(true);storUI(kind)})}
+{const _lkO=lookIn;lookIn=function(){if(S.scene==='home'){const{tx,ty}=front();const k=furnAt(tx,ty,false);if(k>=0){const id=S.house[k][2];if(STOR[id])return{l:STOR[id].n+' 열기',fn:()=>{const d=storData(STOR[id].t);openStor(id,k,storUnits(d))}}}}return _lkO()}}
+function openStor(id,k,used){storUI(id);const b=document.createElement('button');b.className='gb';b.style.cssText='width:100%;margin-top:8px';b.textContent=used?'안이 비어야 집어 들 수 있어요':'가구 집어 들기';b.disabled=!!used;b.onclick=()=>{closeModal();pickFurn(k)};mb.appendChild(b)}
+TIPS.push('펭돌이 가게 가구 탭에서 옷장·냉장고·귀중품 상자를 사서 집에 놓으면 물건을 넣어 둘 수 있어요. 냉장고 안 작물은 시들지 않아요.');
+
+// ===== 화면 위 글자 (캔버스 대신 일반 글자로, 안 깨지게) =====
+const WTQ=[];function wtxt(x,y,t,k){WTQ.push([x,y,String(t),k||'sign'])}
+const WTL=(()=>{const d=document.createElement('div');d.id='wtl';d.style.cssText='position:absolute;left:0;top:0;width:0;height:0;pointer-events:none;z-index:3';return d})();
+(()=>{const st=document.createElement('style');st.textContent=`#wtl .w{position:absolute;transform:translate(-50%,-100%);white-space:nowrap;font-weight:700;line-height:1.25;border-radius:6px;padding:1px 6px;font-size:10px}
+#wtl .sign{background:rgba(255,250,235,.95);color:#5a3a20;border:1px solid #d8c09a;width:max-content;max-width:140px;overflow:hidden;text-overflow:ellipsis}
+#wtl .msg{background:rgba(255,236,244,.96);color:#a0305a;border:1px solid #f0b8cc;width:max-content;max-width:170px;white-space:normal;word-break:keep-all;text-align:center}
+#wtl .ban{background:transparent;color:#fff4d0;font-size:9px;text-shadow:0 1px 0 rgba(0,0,0,.4)}
+#wtl .tag{background:#8a6a42;color:#fff8e8;font-size:9px}`;document.head.appendChild(st)})();
+function wtFlush(cx,cy){if(!WTL.parentNode&&cv.parentNode){cv.parentNode.appendChild(WTL)}const sc=cv.clientWidth/VW,ox=cv.offsetLeft,oy=cv.offsetTop;let h='';
+WTQ.forEach(([x,y,t,k])=>{const L=ox+(x-cx)*sc,Tp=oy+(y-cy)*sc;if(L<ox-100||L>ox+cv.clientWidth+100||Tp<oy-20||Tp>oy+cv.clientHeight+40)return;h+=`<div class="w ${k}" style="left:${Math.round(L)}px;top:${Math.round(Tp)}px">${esc(t)}</div>`});WTQ.length=0;if(WTL._h!==h){WTL.innerHTML=h;WTL._h=h}}
+{const _lb=labels;labels=function(cx,cy){_lb(cx,cy);wtFlush(cx,cy)}}
+{const _di=drawInterior;drawInterior=function(){_di();try{const[cx,cy]=homeCam();wtFlush(cx,cy)}catch(e){WTQ.length=0}}}
 
 const BG=document.createElement('canvas');BG.width=MW*T;BG.height=MH*T;
 function buildBG(){const P=SPAL[season()];const b=BG.getContext('2d');const tufts=(X,Y,h,c,c2)=>{b.fillStyle=c;for(let k=0;k<3;k++){const px=(h>>(k*5))%13,py=(h>>(k*5+3))%12;b.fillRect(X+px,Y+py+1,1,2);b.fillRect(X+px+1,Y+py,1,2)}b.fillStyle=c2;b.fillRect(X+(h>>12)%15,Y+(h>>17)%15,1,1)};
