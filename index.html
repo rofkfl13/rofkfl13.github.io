@@ -35,7 +35,7 @@ body{margin:0;background:#cdebd6;font-family:system-ui,-apple-system,"Apple SD G
 .ja{position:absolute;font-size:11px;color:#c9a77a;pointer-events:none}
 .dp{width:50px;height:50px;border-radius:12px;border:2px solid var(--line);background:var(--cream);font-size:18px;color:var(--ink);touch-action:none}
 .ab{border-radius:14px;border:2px solid var(--line);background:var(--cream);color:var(--ink);font-weight:800;padding:8px 14px;font-size:14px;font-family:inherit;cursor:pointer}
-input,textarea{font-family:inherit;border:2px solid #e0cda6;border-radius:10px;padding:8px;background:#fff;color:var(--ink);width:100%;font-size:14px}
+input,textarea{font-family:inherit;border:2px solid #e0cda6;border-radius:10px;padding:8px;background:#fff;color:var(--ink);width:100%;font-size:14px}input[type=checkbox],input[type=radio]{width:20px;height:20px;padding:0;margin:0;flex:none;accent-color:#f08aa8}
 @media(max-width:600px){.tip{display:none}#dlg{font-size:14px}#top .ab{padding:5px 9px;font-size:12px}#top h1{font-size:18px}#hud{gap:3px;right:6px;top:6px;left:6px}#hud .pill{font-size:10px;padding:1px 7px;border-width:1.5px}#toast{top:auto;bottom:40px;left:50%;right:auto;transform:translateX(-50%);max-width:88%;white-space:normal;word-break:keep-all;text-align:center;font-size:11px;line-height:1.35;padding:3px 10px}#hint{font-size:11px;padding:2px 10px;bottom:6px;max-width:92%;white-space:normal;text-align:center}}
 .nm{font-size:11px;font-weight:700;background:rgba(255,248,231,.92);border:1px solid #c9a77a;border-radius:8px;padding:0 6px;color:#5b4636;white-space:nowrap;display:inline-block}
 .bub{background:#fff;border:2px solid #c9a77a;border-radius:12px;padding:3px 9px;font-size:13px;margin-bottom:3px;max-width:180px;color:#5b4636;word-break:keep-all}
@@ -473,7 +473,7 @@ if(mOpen||dlg)return;
 const mx=(keys.right?1:0)-(keys.left?1:0),my=(keys.down?1:0)-(keys.up?1:0);
 if(F){if(mx||my||Math.hypot(F.tx*T+8-S.px-8,F.ty*T+8-S.py-12)>40){F=null;return}F.t-=dt;if(F.ph==='wait'&&F.t<=0){F.ph='bite';F.t=F.win;beep(880,.08)}else if(F.ph==='bite'&&F.t<=0){F=null;if(S.bait>0)S.bait--;say('',['놓쳤다… 물고기가 도망갔다.'])}return}
 if(mx||my){if(S.pose)unpose();walking=true;if(mx)S.dir=mx>0?'right':'left';else S.dir=my>0?'down':'up';const l=Math.hypot(mx,my),v=(keys.run?120:80)*dt*spdM(),nx=S.px+mx/l*v,ny=S.py+my/l*v;if(!pHit(nx,S.py))S.px=nx;if(!pHit(S.px,ny))S.py=ny;
-if((S.scene||'out')!=='out')checkExit()}}
+if((S.scene||'out')==='out'){const k=at(S.ground,Math.floor((S.px+8)/T),Math.floor((S.py+12)/T));if(k>=0&&IT[S.ground[k][2]]&&IT[S.ground[k][2]].cat==='fruit')pickG(k)}else checkExit()}}
 
 let NET=null,ME=null,OTH={},ISL=null,OL=[],lastSaved='',presT=0,lastPres='',mySay=null,spT=0,lastLab='';
 const busy=new Set();
@@ -1048,7 +1048,7 @@ const haveIng=s=>ingCands(s).reduce((a,i)=>a+cnt(i),0);
 function pickIng(s,good){let c=ingCands(s);if(good)c=c.reverse();let need=s[1];const out=[];for(const i of c){const u=Math.min(need,cnt(i));if(u){out.push([i,u]);need-=u}if(!need)break}return need?null:out}
 let cookGood=false;
 function cookUI(){let h=head('요리하기')+`<label style="display:flex;gap:6px;align-items:center;font-size:14px;margin-bottom:6px"><input type="checkbox" id="cg" ${cookGood?'checked':''}> 좋은 재료(금별·은별)부터 쓰기 → 더 좋은 요리가 나와요</label>`;
-RCP.forEach(r=>{const ok=r[2].every(s=>haveIng(s)>=s[1]),id='d_'+r[0];h+=`<div class="row" style="${ok?'':'opacity:.5'}"><img src="${url(id)}"><span style="flex:1"><b>${r[1]}</b><br><span class="muted">${r[2].map(s=>`${ingN(s)} ${s[1]}개 (${haveIng(s)})`).join(' + ')}</span></span><span>${fmt(IT[id].p)}</span><button class="gb" data-ck="${r[0]}" ${ok?'':'disabled'}>만들기</button></div>`});
+[...RCP].sort((a,b)=>(b[2].every(s=>haveIng(s)>=s[1])?1:0)-(a[2].every(s=>haveIng(s)>=s[1])?1:0)).forEach(r=>{const ok=r[2].every(s=>haveIng(s)>=s[1]),id='d_'+r[0];h+=`<div class="row" style="${ok?'':'opacity:.5'}"><img src="${url(id)}"><span style="flex:1"><b>${r[1]}</b><br><span class="muted">${r[2].map(s=>`${ingN(s)} ${s[1]}개 (${haveIng(s)})`).join(' + ')}</span></span><span>${fmt(IT[id].p)}</span><button class="gb" data-ck="${r[0]}" ${ok?'':'disabled'}>만들기</button></div>`});
 openModal(h+SEDIV);$('cg').onchange=e=>{cookGood=e.target.checked};mb.querySelectorAll('[data-ck]').forEach(b=>b.onclick=()=>{const m=cook(b.dataset.ck);cookUI();msg(m)})}
 function cook(rid){const r=RCP.find(v=>v[0]===rid);const pk=r[2].map(s=>pickIng(s,cookGood));if(pk.some(p=>!p))return'재료가 모자라요';const all=pk.flat();const qs=[];all.forEach(([i,u])=>{const it=IT[i];const q=it.cat==='crop'?dq(i):(it.r>=4?2:it.r>=3?1:0);for(let k=0;k<u;k++)qs.push(q)});const av=qs.reduce((a,b)=>a+b,0)/qs.length+(skL('cook')-1)*.06;const g=av>=1.5?2:av>=.75?1:0;const did='d_'+rid+['','_s','_g'][g];
 if(!cnt(did)&&S.inv.length>=30&&!all.some(([i,u])=>cnt(i)===u))return'가방이 꽉 찼어요';all.forEach(([i,u])=>remItem(i,u));addItem(did);beep(880,.06);setTimeout(()=>beep(1320,.08),110);mHook('cook');save(true);return`${IT[did].n} 완성!`+(g?` (${g===2?'금별':'은별'} 요리라 더 비싸요!)`:'')}
