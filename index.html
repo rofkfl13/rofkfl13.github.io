@@ -941,7 +941,7 @@ const ROTD=5;const perish=id=>!!(IT[id]&&IT[id].cat==='crop');
 function frq(id){S.fresh=S.fresh||{};let q=S.fresh[id];if(!Array.isArray(q))q=S.fresh[id]=[];q=q.filter(b=>Array.isArray(b)&&b[1]>0);S.fresh[id]=q;const have=cnt(id);let tot=q.reduce((a,b)=>a+b[1],0);if(tot<have)q.push([Date.now(),have-tot]);else if(tot>have){let k=tot-have;while(k>0&&q.length){const u=Math.min(k,q[0][1]);q[0][1]-=u;k-=u;if(q[0][1]<=0)q.shift()}}if(!q.length)delete S.fresh[id];return q}
 const ageD=t=>(Date.now()-t)/864e5;const ageM=t=>{const a=ageD(t);return a<2?1:a<4?.85:.6};
 function freshInfo(id){if(!perish(id)||!cnt(id))return null;const q=frq(id);if(!q.length)return null;const a=ageD(q[0][0]);return{m:ageM(q[0][0]),lab:a<2?'싱싱해요':a<4?'조금 시들었어요 (가격 85%)':'많이 시들었어요 (가격 60%)',left:Math.max(0,ROTD-a)}}
-function sellP(id,fm){const it=IT[id];if(!it)return 0;let p=it.p;if(it.cat==='crop'){const f=fm!==undefined?fm:((freshInfo(id)||{}).m||1);p=Math.max(10,Math.round(p*mkt(it.base||id)*f/10)*10)}else if(it.cat==='dish')p=Math.max(10,Math.round(p*.5/10)*10);return p}
+function sellP(id,fm){const it=IT[id];if(!it)return 0;let p=it.p;if(it.cat==='crop'){const f=fm!==undefined?fm:((freshInfo(id)||{}).m||1);p=Math.max(10,Math.round(p*mkt(it.base||id)*f/10)*10)}else if(it.cat==='dish')p=Math.max(10,Math.round(p*.8/10)*10);return p}
 function sellRaw(id,n){if(n<=0||!cnt(id))return{t:0};n=Math.min(n,cnt(id));let t=0;if(perish(id)){const q=frq(id);let k=n;for(const b of q){if(k<=0)break;const u=Math.min(k,b[1]);t+=sellP(id,ageM(b[0]))*u;k-=u}if(k>0)t+=sellP(id,1)*k}else t=sellP(id)*n;
 S.coins+=t;remItem(id,n);S.sold[id]=(S.sold[id]||0)+n;let u=null;const bs=IT[id].base||id;if(IT[id].cat==='crop'&&!S.unl[bs]&&!SPC[bs]){S.unl[bs]=1;u=IT[bs].n+' 씨앗'}return{t,u}}
 const _addI=addItem,_remI=remItem;
@@ -978,7 +978,7 @@ const RCP=[['salad','샐러드',[['cabbage',1],['tomato',1]],'plate','#8ad06a','
 const ICAT={'@fish':['fish','물고기',250],'@fruit':['fruit','과일',120],'@mush':['mush','버섯',180]};
 const ingN=s=>ICAT[s[0]]?ICAT[s[0]][1]:IT[s[0]].n;
 RCP.forEach(([id,n,ing,sh,a,b])=>{const v=ing.reduce((t,s)=>t+(ICAT[s[0]]?ICAT[s[0]][2]:IT[s[0]].p)*s[1],0);const p=Math.round(v*1.4/10)*10;const r=p<500?1:p<1000?2:p<2000?3:p<4000?4:5;const ic=dishIc(sh,a,b);
-def('d_'+id,n,p,ic,'dish',{r,rc:id,desc:'몽글 식당 손님에게 대접하면 제값을 받아요'});[['_s','은별 ',1.5,'#d8e0e8','#7a8898'],['_g','금별 ',2.2,'#ffd23a','#a07010']].forEach(([sf,pre,m,col,oc])=>{const cv=document.createElement('canvas');cv.width=20;cv.height=17;const x=cv.getContext('2d');x.drawImage(ic,0,3);x.fillStyle=oc;x.fillRect(15,0,5,5);x.fillStyle=col;x.fillRect(16,1,3,3);def('d_'+id+sf,pre+n,Math.round(p*m/10)*10,cv,'dish',{r,rc:id,base:'d_'+id,desc:'정성 가득한 요리! 더 비싸게 팔려요'})})});
+def('d_'+id,n,p,ic,'dish',{r,rc:id,desc:'몽글 식당 손님에게 대접하면 제값을 받아요'});[['_b','동별 ',1.25,'#e8b890','#8a5a3a'],['_s','은별 ',1.6,'#d8e0e8','#7a8898'],['_g','금별 ',3,'#ffd23a','#a07010']].forEach(([sf,pre,m,col,oc])=>{const cv=document.createElement('canvas');cv.width=20;cv.height=17;const x=cv.getContext('2d');x.drawImage(ic,0,3);x.fillStyle=oc;x.fillRect(15,0,5,5);x.fillStyle=col;x.fillRect(16,1,3,3);def('d_'+id+sf,pre+n,Math.round(p*m/10)*10,cv,'dish',{r,rc:id,base:'d_'+id,desc:'정성 가득한 요리! 더 비싸게 팔려요'})})});
 
 // ---------- 섬 꾸미기 · 희귀 가구 ----------
 def('fence','나무 울타리',150,mkC(16,12,r=>{r('#8a5a32',0,3,16,2);r('#8a5a32',0,8,16,2);r('#b07a45',0,3,16,1);r('#b07a45',0,8,16,1);r('#6a4020',2,0,3,12);r('#6a4020',11,0,3,12);r('#b07a45',3,0,1,11);r('#b07a45',12,0,1,11)}),'decor');
@@ -1047,11 +1047,11 @@ function ingCands(s){const k=s[0];if(ICAT[k]){const c=ICAT[k][0];return S.inv.fi
 const haveIng=s=>ingCands(s).reduce((a,i)=>a+cnt(i),0);
 function pickIng(s,good){let c=ingCands(s);if(good)c=c.reverse();let need=s[1];const out=[];for(const i of c){const u=Math.min(need,cnt(i));if(u){out.push([i,u]);need-=u}if(!need)break}return need?null:out}
 let cookGood=false;
-function cookUI(){let h=head('요리하기')+`<label style="display:flex;gap:6px;align-items:center;font-size:14px;margin-bottom:6px"><input type="checkbox" id="cg" ${cookGood?'checked':''}> 좋은 재료(금별·은별)부터 쓰기 → 더 좋은 요리가 나와요</label>`;
+function cookUI(){cookGood=!!S.ckGood;let h=head('요리하기')+`<label style="display:flex;gap:6px;align-items:center;font-size:14px;margin-bottom:6px"><input type="checkbox" id="cg" ${cookGood?'':'checked'}> 낮은 등급부터 쓰기 <span class="muted" style="font-size:12px">(끄면 좋은 재료부터 써서 별 요리가 나와요)</span></label>`;
 [...RCP].sort((a,b)=>(b[2].every(s=>haveIng(s)>=s[1])?1:0)-(a[2].every(s=>haveIng(s)>=s[1])?1:0)).forEach(r=>{const ok=r[2].every(s=>haveIng(s)>=s[1]),id='d_'+r[0];h+=`<div class="row" style="${ok?'':'opacity:.5'}"><img src="${url(id)}"><span style="flex:1"><b>${r[1]}</b><br><span class="muted">${r[2].map(s=>`${ingN(s)} ${s[1]}개 (${haveIng(s)})`).join(' + ')}</span></span><span>${fmt(IT[id].p)}</span><button class="gb" data-ck="${r[0]}" ${ok?'':'disabled'}>만들기</button></div>`});
-openModal(h+SEDIV);$('cg').onchange=e=>{cookGood=e.target.checked};mb.querySelectorAll('[data-ck]').forEach(b=>b.onclick=()=>{const m=cook(b.dataset.ck);cookUI();msg(m)})}
-function cook(rid){const r=RCP.find(v=>v[0]===rid);const pk=r[2].map(s=>pickIng(s,cookGood));if(pk.some(p=>!p))return'재료가 모자라요';const all=pk.flat();const qs=[];all.forEach(([i,u])=>{const it=IT[i];const q=it.cat==='crop'?dq(i):(it.r>=4?2:it.r>=3?1:0);for(let k=0;k<u;k++)qs.push(q)});const av=qs.reduce((a,b)=>a+b,0)/qs.length+(skL('cook')-1)*.06;const g=av>=1.5?2:av>=.75?1:0;const did='d_'+rid+['','_s','_g'][g];
-if(!cnt(did)&&S.inv.length>=30&&!all.some(([i,u])=>cnt(i)===u))return'가방이 꽉 찼어요';all.forEach(([i,u])=>remItem(i,u));addItem(did);beep(880,.06);setTimeout(()=>beep(1320,.08),110);mHook('cook');save(true);return`${IT[did].n} 완성!`+(g?` (${g===2?'금별':'은별'} 요리라 더 비싸요!)`:'')}
+openModal(h+SEDIV);$('cg').onchange=e=>{cookGood=!e.target.checked;S.ckGood=cookGood;save(true)};mb.querySelectorAll('[data-ck]').forEach(b=>b.onclick=()=>{const m=cook(b.dataset.ck);cookUI();msg(m)})}
+function cook(rid){const r=RCP.find(v=>v[0]===rid);const pk=r[2].map(s=>pickIng(s,cookGood));if(pk.some(p=>!p))return'재료가 모자라요';const all=pk.flat();const ms=[];all.forEach(([i,u])=>{const it=IT[i];const m=it.cat==='crop'?(i.endsWith('_g')?3:i.endsWith('_s')?1.6:i.endsWith('_b')?1.25:1):(it.r>=4?3:it.r>=3?1.6:1);for(let k=0;k<u;k++)ms.push(m)});const av=ms.reduce((a,b)=>a+b,0)/ms.length*(1+.05*(skL('cook')-1));const g=av>=2.99?3:av>=1.6?2:av>=1.25?1:0;const did='d_'+rid+['','_b','_s','_g'][g];
+if(!cnt(did)&&S.inv.length>=30&&!all.some(([i,u])=>cnt(i)===u))return'가방이 꽉 찼어요';all.forEach(([i,u])=>remItem(i,u));addItem(did);beep(880,.06);setTimeout(()=>beep(1320,.08),110);mHook('cook');save(true);return`${IT[did].n} 완성!`+(g?` (${['','동별','은별','금별'][g]} 요리라 더 비싸요!)`:'')}
 // 진열장
 function caseUI(){const st=stockL(),ros=(ISL&&ISL.roster)||{};let h=head('진열장')+`<p class="muted" style="margin:0 0 6px">진열한 요리는 손님이 사 가요. 아무도 없을 때도 조금씩 팔려요! 판 돈은 계산대에서 받아요. (진열 ${st.length}/${restCap()})</p>`;
 st.forEach(([k,v])=>{h+=`<div class="row"><img src="${url(v[0])}"><span style="flex:1">${IT[v[0]].n} <span class="muted">· ${escH(ros[v[1]]||'?')}의 요리</span></span><span>${fmt(dishPay(v[0]))}</span>${v[1]===ME?`<button class="gb" data-tk="${k}">빼기</button>`:''}</div>`});if(!st.length)h+='<p class="muted">진열된 요리가 없어요.</p>';
@@ -1073,7 +1073,7 @@ function custTick(dt){cuT-=dt;const lv=restLv();if(cuT<=0){cuT=(20-lv*2.5)*(.7+M
 CU.forEach(c=>{c.t+=dt;if(c.st==='in'||c.st==='out'){const p=c.path[0];if(!p){if(c.st==='in'){c.st='sit';c.t=0}else c.gone=true;return}const tx=p[0]*T,ty=p[1]*T,dx=tx-c.x,dy=ty-c.y,d=Math.hypot(dx,dy),sp=42*dt;if(d<=sp){c.x=tx;c.y=ty;c.path.shift()}else{c.x+=dx/d*sp;c.y+=dy/d*sp}}
 else if(c.st==='sit'){if(c.t>20&&!c.tried){c.tried=true;serveStock(c,false)}if(c.t>c.pat)leaveC(c,false)}else if(c.st==='eat'&&c.t>5)leaveC(c,true)});CU=CU.filter(c=>!c.gone)}
 function leaveC(c,happy){const[sx]=SEATS[c.seat];c.st='out';c.happy=happy;c.t=0;c.path=[[sx,7],[8,7],[8,10]];if(!happy)toast('손님이 기다리다 돌아갔어요…')}
-function serve(c){if(c.st!=='sit')return;const b='d_'+c.ord,g=[b+'_g',b+'_s',b].find(i=>cnt(i));if(g){remItem(g);const pay=dishPay(g),tip=Math.round(pay*.1/10)*10;S.coins+=pay+tip;NET.tx('island/rest/sold',v=>(+v||0)+1).catch(()=>{});served(c,g);toast(`${IT[g].n} 대접! ${fmt(pay)} 코인 + 팁 ${fmt(tip)}`);save(true);return}serveStock(c,true)}
+function serve(c){if(c.st!=='sit')return;const b='d_'+c.ord,g=[b+'_g',b+'_s',b+'_b',b].find(i=>cnt(i));if(g){remItem(g);const pay=dishPay(g),tip=Math.round(pay*.1/10)*10;S.coins+=pay+tip;NET.tx('island/rest/sold',v=>(+v||0)+1).catch(()=>{});served(c,g);toast(`${IT[g].n} 대접! ${fmt(pay)} 코인 + 팁 ${fmt(tip)}`);save(true);return}serveStock(c,true)}
 function serveStock(c,me){const b='d_'+c.ord;once('sv'+c.seat,async()=>{let had=null;const r=await NET.tx('island/rest/stock',cur=>{had=null;if(!cur||typeof cur!=='object')return undefined;const ks=Object.keys(cur).filter(k=>Array.isArray(cur[k])&&IT[cur[k][0]]&&(cur[k][0]===b||IT[cur[k][0]].base===b));if(!ks.length)return undefined;ks.sort((x,y)=>dq(cur[y][0])-dq(cur[x][0]));had=cur[ks[0]];delete cur[ks[0]];return cur});
 if(!(r.committed&&had)){if(me)toast(`${jo(IT[b].n,'이','가')} 없어요. 주방에서 만들어 대접해요`);return}if(c.st!=='sit')return;const pay=dishPay(had[0]);await NET.tx('island/rest/earn/'+had[1],v=>(+v||0)+pay);NET.tx('island/rest/sold',v=>(+v||0)+1).catch(()=>{});if(me){const tip=Math.round(pay*.08/10)*10;S.coins+=tip;save(true);toast(`진열장의 ${IT[had[0]].n} 대접! 매출 ${fmt(pay)} · 팁 ${fmt(tip)}`)}else toast(`손님이 진열장의 ${IT[had[0]].n}을(를) 사 갔어요`);served(c,had[0])})}
 function served(c,id){c.st='eat';c.t=0;c.got=id;beep(1100,.06);NET.tx('island/rest/rep',v=>(+v||0)+(dq(id)===2?2:1)).catch(()=>{});mHook('serve')}
@@ -1327,7 +1327,7 @@ if(!cur.nx||t>=+cur.nx){const used=Object.keys(cs).map(id=>cs[id].seat);const fr
 cur.c=cs;return ch?cur:undefined}).catch(()=>{})}
 function claimStock(c){if(c._cl)return;c._cl=1;NET.tx('island/rest/cq/c/'+c.id+'/tr',v=>v?undefined:1).then(r=>{if(r&&r.committed)serveStock(c,false)}).catch(()=>{})}
 async function claimCust(c,dish){const r=await NET.tx('island/rest/cq/c/'+c.id,cur=>{if(!cur||cur.st==='eat')return undefined;const d=cuDerive(c.id,cur,nowS());if(!d||d.st!=='sit')return undefined;cur.st='eat';cur.te=nowS();cur.got=dish;return cur});return!!(r&&r.committed)}
-function serve(c){if(c.st!=='sit')return;const b='d_'+c.ord,g=[b+'_g',b+'_s',b].find(i=>cnt(i));if(!g){serveStock(c,true);return}
+function serve(c){if(c.st!=='sit')return;const b='d_'+c.ord,g=[b+'_g',b+'_s',b+'_b',b].find(i=>cnt(i));if(!g){serveStock(c,true);return}
 once('sv'+c.id,async()=>{if(!(await claimCust(c,g))){toast('앗, 이미 다른 사람이 대접했어요!');return}if(!cnt(g))return;remItem(g);const pay=dishPay(g),tip=Math.round(pay*.1/10)*10;S.coins+=pay+tip;NET.tx('island/rest/sold',v=>(+v||0)+1).catch(()=>{});served(c,g);toast(`${IT[g].n} 대접! ${fmt(pay)} 코인 + 팁 ${fmt(tip)}`);save(true)})}
 function serveStock(c,me){const b='d_'+c.ord;once('ss'+c.id,async()=>{const sk=stockL().find(([k,v])=>v[0]===b||IT[v[0]].base===b);if(!sk){if(me)toast(`${jo(IT[b].n,'이','가')} 없어요. 주방에서 만들어 대접해요`);return}
 if(!(await claimCust(c,sk[1][0]))){if(me)toast('앗, 이미 다른 사람이 대접했어요!');return}
@@ -1860,7 +1860,7 @@ const base=r>=4?.65:r===3?.7:r===2?.75:.8;F={ph:'wait',t:(2.5+Math.random()*4)*M
 setInterval(()=>{if(F&&F.ph==='bite'&&F.rare&&!F._rm){F._rm=1;toast('어? 좋은 거 같아!')}},50);
 
 // ===== 펫 종류 + 성향 =====
-PF.push('ptc','ptLast','ptSulk','ptG');
+PF.push('ptc','ptLast','ptSulk','ptG','ckGood');
 PETR.rabbit=["...kk..kk...","..kpk..kpk..","..kpk..kpk..","..kak..kak..",".kaaakkaaak.","kaaaaaaaaaak","kaeaaaaaaeak","kapaanaaapak",".kaaaaaaaak.",".kawwwwwwak.",".kaak..kaak.","..kk....kk.."];
 PETR.fox=["k..........k","kak......kak","kaEk....kEak","kaaakkkkaaak","kaaaaaaaaaak","kaeaaaaaaeak",".kEEaannaEEk",".kEEEEEEEEk.","..kaaaaaak..",".kaaaaaaaak.",".kak.kk.kak.",".kk..kk..kk."];
 PETR.penguin=["....kkkk....","...kaaaak...","..kaaaaaak..","..kaewweak..","..kawEEwak..",".kaawwwwaak.","kaawwwwwwaak","kaawwwwwwaak",".kaawwwwaak.","..kawwwwak..","...kkkkkk...","..kEEk.kEEk."];
