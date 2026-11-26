@@ -1854,6 +1854,10 @@ r(bgLerp(C,'#ffffff',.3),x+2,y+1,11,5)}
 const _slB=sceneL;sceneL=function(L){_slB(L);if(S.scene!=='rest')return;const X=4*T,Y=3*T;L.push([Y+14,()=>{R('#7a5232',X,Y-2,16,17);R('#c8925a',X,Y-2,16,5);R('#e0b07a',X,Y-2,16,1);R('#a8743e',X+2,Y+5,12,8);R('#3a3a42',X+1,Y-9,14,8);R('#6a6a74',X+1,Y-9,14,1);R('#16161a',X+3,Y-7,4,3);R('#16161a',X+9,Y-7,4,3);R('#e0a040',X+3,Y-7,3,2);R('#e8b050',X+9,Y-6,3,2);R('#8a4a18',X+6,Y-7,1,2);R('#8a4a18',X+12,Y-6,1,2);
 R('#7a5232',X-1,Y-30,18,12);R('#fff4dc',X,Y-29,16,10);R('#e0a040',X+3,Y-26,8,4);R('#8a4a18',X+11,Y-27,3,6);R('#3a2410',X+4,Y-25,1,1)}])};
 const _lkB=lookIn;lookIn=function(){if(S.scene==='rest'){const{tx,ty}=front();if(FIXS.rest[tx+','+ty]==='bung')return{l:'붕어빵 굽기',fn:bungUI}}return _lkB()};
+// ===== 낚시 조정: 입질 대기 늘림, 당길 시간 기본 0.8초·귀한 물고기 0.65초 =====
+function cast(tx,ty,t){const area=t===SEA?'sea':t===RIVER?'river':'lake';const L=lvl('rod')+(S.bait>0?1.5:0);const pool=FISH.filter(f=>f[5]===area&&timeOk(f[6])).map(f=>[f[0],rw(f[3],f[4],L)*wxFish(f)]);const id=wpick(pool);const r=IT[id].r;
+const base=r>=4?.65:r===3?.7:r===2?.75:.8;F={ph:'wait',t:(2.5+Math.random()*4)*Math.max(.6,1-L*.08),tx,ty,id,win:base+.05*L,rare:r>=4};beep(500,.05)}
+setInterval(()=>{if(F&&F.ph==='bite'&&F.rare&&!F._rm){F._rm=1;toast('어? 좋은 거 같아!')}},50);
 
 // ===== 펫 종류 + 성향 =====
 PF.push('ptc','ptLast','ptSulk','ptG');
