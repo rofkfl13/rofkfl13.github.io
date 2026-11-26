@@ -57,7 +57,7 @@ h3{margin:12px 0 6px;font-size:15px}
 </div>
 <div id="ctrl">
 <div id="joy" aria-label="조이스틱"><div id="joyk"></div><span class="ja" style="top:6px;left:50%;transform:translateX(-50%)">▲</span><span class="ja" style="bottom:6px;left:50%;transform:translateX(-50%)">▼</span><span class="ja" style="left:8px;top:50%;transform:translateY(-50%)">◀</span><span class="ja" style="right:8px;top:50%;transform:translateY(-50%)">▶</span></div>
-<div class="tip" style="font-size:12px;text-align:center;line-height:1.8;color:#6b8a70">조이스틱을 끌어서 이동 (끝까지 밀면 달리기)<br>방향키·WASD도 돼요 · Space 행동 · I 가방 · K 도감<br>화면 아래 말풍선이 할 수 있는 행동이에요</div>
+<div class="tip" style="font-size:12px;text-align:center;line-height:1.8;color:#6b8a70">조이스틱을 끌어서 이동 (끝까지 밀면 달리기)<br>방향키·WASD도 돼요 · Space 행동 · F 비료 · I 가방 · K 도감<br>화면 아래 말풍선이 할 수 있는 행동이에요</div>
 <button class="ab" id="bA" style="flex:none;width:96px;height:96px;border-radius:50%;font-size:16px">행동<br><span style="font-size:11px">Space</span></button>
 </div>
 </div>
@@ -1938,6 +1938,17 @@ if(d){const it=IT[d.id],f=it.fp||[1,1],X=d.tx*T,Y=(d.ty-f[1]+1)*T;ctx.fillStyle=
 ctx.restore()}}
 {const _fu=furnUI;furnUI=function(k,tx){_fu(k,tx);const row=mb.querySelector('#fp');if(row){const b=document.createElement('button');b.className='gb big';b.textContent='옮기기';b.onclick=()=>{closeModal();hmSet(true)};row.parentNode.appendChild(b)}}}
 TIPS.push('집 안에서 오른쪽 위 "가구 옮기기"를 누르면 가구를 끌어서 옮길 수 있어요.');
+// ===== 물주기/비료주기 구분: Space=물, 비료=🌱 버튼(F) · 황금 비료=✨ 버튼(G) =====
+function plotLook(key){const p=S.plots[key];if(!p||!IT[p.c])return null;const s=simP(p);if(s.dead)return{l:'시든 식물 치우기',fn:()=>clearDead(key)};if(s.ripe)return{l:'수확하기',fn:()=>harvestK(key)};
+const fh=s.n<25&&(cnt('fert')||cnt('gfert'))?' · 비료는 🌱':'';if(s.m>s.hi)return{l:'물이 충분해요'+fh,fn:()=>toast('물이 너무 많아요. 마를 때까지 기다려요')};return{l:'물 주기'+fh,fn:()=>plotAct(key,'water')}}
+function fertKey(){if(!S||mOpen||F)return null;const{tx,ty}=front();let k=null;if(S.scene==='gh'){const i=ghAt(tx,ty);if(i>=0)k='g'+i}else if((S.scene||'out')==='out')k=tx+','+ty;if(!k||!S.plots[k]||!IT[S.plots[k].c])return null;const s=simP(S.plots[k]);return s.dead||s.ripe?null:k}
+function doFert(kind){const k=fertKey();if(!k){toast('비료는 자라는 작물 앞에서 줄 수 있어요');return}if(!cnt(kind)){toast(kind==='gfert'?'황금 비료가 없어요':'비료가 없어요. 잡화점에서 살 수 있어요');return}plotAct(k,kind)}
+addEventListener('keydown',e=>{const tg=e.target.tagName;if(tg==='INPUT'||tg==='TEXTAREA'||mOpen)return;if(e.code==='KeyF'){e.preventDefault();doFert('fert')}else if(e.code==='KeyG'){e.preventDefault();doFert('gfert')}});
+(()=>{const bA=$('bA');if(!bA)return;const col=document.createElement('div');col.id='fcol';col.style.cssText='display:flex;flex-direction:column;gap:6px;align-items:center;flex:none;margin-left:auto;margin-right:6px';
+const mk=(id,t,kind)=>{const b=document.createElement('button');b.className='ab';b.id=id;b.style.cssText='width:58px;height:58px;border-radius:50%;font-size:12px;line-height:1.15;padding:0;flex:none';b.innerHTML=t;b.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();doFert(kind)});col.appendChild(b);return b};
+mk('bF','🌱<br>비료','fert');mk('bG','✨<br>황금','gfert');bA.parentNode.insertBefore(col,bA);
+setInterval(()=>{const k=fertKey();const f=$('bF'),g=$('bG');f.style.visibility=k?'visible':'hidden';f.innerHTML=`🌱<br>비료 ${cnt('fert')}`;g.style.display=k&&cnt('gfert')?'block':'none';g.innerHTML=`✨<br>황금 ${cnt('gfert')}`},200)})();
+TIPS.push('작물 앞에서 Space는 물주기, 🌱 버튼(PC는 F키)은 비료, ✨ 버튼(G키)은 황금 비료예요.');
 
 const BG=document.createElement('canvas');BG.width=MW*T;BG.height=MH*T;
 function buildBG(){const P=SPAL[season()];const b=BG.getContext('2d');const tufts=(X,Y,h,c,c2)=>{b.fillStyle=c;for(let k=0;k<3;k++){const px=(h>>(k*5))%13,py=(h>>(k*5+3))%12;b.fillRect(X+px,Y+py+1,1,2);b.fillRect(X+px+1,Y+py,1,2)}b.fillStyle=c2;b.fillRect(X+(h>>12)%15,Y+(h>>17)%15,1,1)};
