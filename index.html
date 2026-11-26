@@ -105,7 +105,7 @@ squirrel:[["..kk......kk....",".kaak....kaak...",".kaaakkkkaaak.kk",".kaaaaaaaaa
 sheep:[["...kkkkkkkkkk...","..kwwwwwwwwwwk..",".kwwwwwwwwwwwwk.","kkwwkkkkkkkkwwkk","kdkkddddddddkkdk","kddkdeddddedkddk",".kkkdeddddedkkk.","...kddddddddk...","...kdddppdddk...","....kkkkkkkk....","..kwwwwwwwwwwk..",".kwwwssssssswwk.","..kwwssssssswk..","...kwwwwwwwwk...","....kdk..kdk....","....kkk..kkk...."],{k:'#7a6a5a',w:'#ffffff',d:'#f6dcc8',e:'#3a2a20',p:'#ffa0b0',s:'#ff9fc0'}],
 turtle:[["....kkkkkk......","...kggggggk.....","..kggggggggk....","..kgkkgkkggk....","..kgkwkkwkgk....","..kggggggggk....","...kgggmmgk.....","..kkkkkkkkkkk...",".kSSsSSsSSsSSk..","kSSsSSsSSsSSSSk.","kSsSSsSSsSSsSSk.",".kkkkkkkkkkkkk..","..kgk.....kgk...","..kkk.....kkk..."],{k:'#2a4a2a',g:'#8ad07a',w:'#e8f4ff',m:'#e07a6a',S:'#8a6a3a',s:'#c8a060'}],
 penguin:[[".....kkkkkk.....","...kkbbbbbbkk...","..kbbbbbbbbbbk..","..kbwwwbbwwwbk..",".kbwwewwwwewwbk.",".kbwwwwwwwwwwbk.",".kbwwwwoowwwwbk.",".kbpwwwwwwwwpbk.","kbbbwwwwwwwwbbbk","kbbbwwwwwwwwbbbk",".kbbwwwwwwwwbbk.","..kbbwwwwwwbbk..","...kkkkkkkkkk...","...kook..kook..."],{k:'#1f2638',b:'#3d4a6b',w:'#ffffff',e:'#1a1a1a',o:'#ffa33a',p:'#ffc0cb'}]};
-NPCSPR.fox=[NPCSPR.cat[0],Object.assign({},NPCSPR.cat[1],{k:'#5a2a10',a:'#f0904a',p:'#fff0dc'})];for(const k in NPCSPR)NPCSPR[k]=spr(NPCSPR[k][0],NPCSPR[k][1]);
+NPCSPR.fox=[NPCSPR.cat[0],Object.assign({},NPCSPR.cat[1],{k:'#5a2a10',a:'#f0904a',p:'#fff0dc'})];NPCSPR.flora=[NPCSPR.bunny[0],Object.assign({},NPCSPR.bunny[1],{w:'#ffe4ee',p:'#ff7aa8'})];NPCSPR.otter=[NPCSPR.bear[0],Object.assign({},NPCSPR.bear[1],{b:'#8a5a3a',p:'#c8946a',w:'#f4e0c8',k:'#3a2414'})];for(const k in NPCSPR)NPCSPR[k]=spr(NPCSPR[k][0],NPCSPR[k][1]);
 
 const TRP={o:'#2c5a2e',L:'#9be07a',g:'#5fbf4a',G:'#3f9a3a',T:'#6e4a2a',t:'#9a6a3a',k:'rgba(0,0,0,.18)'};
 const TRR=["......oooo......","....ooLLggoo....","...oLLLgggggo...","..oLLggggggGGo..",".oLLgggggggggGo.",".oLggggggggggGo.","oLgggggggggggGGo","ogggggggggggGGGo","ogggggggggggGGGo","oGgggggggggGGGGo","oGGgggggggGGGGGo",".oGGGggggGGGGGo.",".oGGGGGGGGGGGGo.","..ooGGGGGGGGoo..","....oooTtToo....","......TttT......","......TttT......",".....TTttTT.....","....kkkkkkkk...."];
@@ -173,8 +173,8 @@ BEACH.forEach(b=>def(b[0],b[1],b[2],spr(TP[b[5]],{k:'#7a5040',a:b[6],A:b[7],w:'#
 const MUSH=[['shiitake','표고버섯',200,35,1,'#a0703a','#f0e0c8'],['oyster','느타리버섯',180,35,1,'#b8b0a8','#f0ece0'],['redm','빨간 버섯',300,20,2,'#e8453c','#f8f0e8'],['matsu','송이버섯',3000,3,4,'#c8a070','#f0e0c0']];
 const MUSH2=[['enoki','팽이버섯',150,38,1,'#f8f4e8','#ffffff'],['king','새송이버섯',220,34,1,'#e0d0b0','#f8f0e0'],['flyag','광대버섯',500,22,2,'#e8453c','#ffffff'],['lion','노루궁뎅이',1200,14,3,'#f8f0e0','#e8dcc8'],['reishi','영지버섯',1500,12,3,'#a04a2a','#e0a060'],['truffle','송로버섯',6000,4,5,'#4a3a2a','#8a7a6a']];MUSH.push(...MUSH2);
 MUSH.forEach(m=>def(m[0],m[1],m[2],spr(TP.mu,{k:'#4a3020',a:m[5],A:m[6],w:'#ffffff'}),'mush',{w:m[3],r:m[4],where:'숲 바닥'}));
-const FRUITS=[['apple','사과',100,'#e8453c','#b8302a'],['peach','복숭아',100,'#ffa8b0','#e88090'],['orange','오렌지',100,'#ff9a2a','#d87010'],['pear','배',100,'#e8d870','#b8a840'],['coconut','코코넛',250,'#9a6a3a','#6a4a2a']];
-FRUITS.forEach(f=>def(f[0],f[1],f[2],spr(TP[f[0]==='coconut'?'cc':'fr'],{k:'#5a2a20',a:f[3],A:f[4],w:'#ffffff',g:'#4a8a3a',G:'#6fc25a'}),'fruit',{col:f[3],where:f[0]==='coconut'?'해변 야자수':'마을 과일나무'}));
+const FRUITS=[['apple','사과',100,'#e8453c','#b8302a'],['peach','복숭아',100,'#ffa8b0','#e88090'],['orange','오렌지',100,'#ff9a2a','#d87010'],['pear','배',100,'#e8d870','#b8a840'],['coconut','코코넛',250,'#9a6a3a','#6a4a2a'],['cherry','체리',180,'#e0204a','#a01030'],['lemon','레몬',160,'#fff04a','#d8c020'],['kiwi','키위',170,'#9a7a4a','#6a5a2a']];
+FRUITS.forEach(f=>def(f[0],f[1],f[2],spr(TP[f[0]==='coconut'?'cc':'fr'],{k:'#5a2a20',a:f[3],A:f[4],w:'#ffffff',g:'#4a8a3a',G:'#6fc25a'}),'fruit',{col:f[3],where:f[0]==='coconut'?'해변 야자수':['cherry','lemon','kiwi'].includes(f[0])?'동쪽 섬 과수원':'마을 과일나무'}));
 def('weed','잡초',10,spr(["g...g...g","gg..g..gg",".gg.g.gg.",".gGgGgGg.","..GGGGG.."],{g:'#6fc25a',G:'#3f8f3a'}),'etc');
 def('stone','돌',75,spr(TP.stn,{k:'#5a5a5a',a:'#e2e2e2',A:'#b8b8b8',B:'#8c8c8c',w:'#ffffff'}),'mineral');
 def('iron','철광석',375,spr(TP.stn,{k:'#4a4a5a',a:'#c8c8d0',A:'#8a8a98',B:'#5a5a68',w:'#e88a5a'}),'mineral');
@@ -231,9 +231,9 @@ const stars=r=>'★'.repeat(r)+'☆'.repeat(5-r);
 const GR=0,SAND=1,SEA=2,PATH=3,BRIDGE=4,RIVER=5,SOIL=6,LAKE=7,FOR=8;
 const MAP=[];const riverX=y=>42+Math.round(Math.sin(y*0.16)*3);
 const BLD=[{x:8,y:9,w:3,h:3,k:'home',roof:'#ef7c7c'},{x:14,y:9,w:3,h:3,k:'momo',roof:'#8fc0ff'},{x:26,y:9,w:3,h:3,k:'bear',roof:'#e0a050'},{x:32,y:9,w:3,h:3,k:'cat',roof:'#c08ae8'},{x:7,y:33,w:3,h:3,k:'squirrel',roof:'#ff9a5a'},{x:47,y:37,w:3,h:3,k:'frog',roof:'#7ad06a'},
-{x:13,y:17,w:4,h:3,k:'peng',shop:'general',roof:'#5a9ad8',sign:'apple'},{x:18,y:17,w:4,h:3,k:'sheep',shop:'clothes',roof:'#ff8fb0',sign:'t_straw'},{x:27,y:17,w:4,h:3,k:'turtle',shop:'dex',roof:'#6ab06a',sign:'ammo'}];
+{x:13,y:17,w:4,h:3,k:'peng',shop:'general',roof:'#5a9ad8',sign:'apple'},{x:18,y:17,w:4,h:3,k:'sheep',shop:'clothes',roof:'#ff8fb0',sign:'t_straw'},{x:27,y:17,w:4,h:3,k:'turtle',shop:'dex',roof:'#6ab06a',sign:'ammo'},{x:86,y:36,w:3,h:3,k:'flora',roof:'#ff9ac0'},{x:104,y:38,w:3,h:3,k:'otter',roof:'#5a9ad8'}];
 const NPCS=[{id:'momo',name:'모모',s:'bunny',z:[12,12,21,16]},{id:'bear',name:'포근이',s:'bear',z:[22,12,31,16]},{id:'cat',name:'냥냥이',s:'cat',z:[29,12,38,16]},{id:'squirrel',name:'도토리',s:'squirrel',z:[6,36,19,42]},{id:'frog',name:'개굴이',s:'frog',z:[44,40,53,46]},
-{id:'peng',name:'펭돌이',s:'penguin',fx:[14,20],shop:'general'},{id:'sheep',name:'뭉실이',s:'sheep',fx:[19,20],shop:'clothes'},{id:'turtle',name:'느림보 박사',s:'turtle',fx:[28,20],shop:'dex'}];
+{id:'peng',name:'펭돌이',s:'penguin',fx:[14,20],shop:'general'},{id:'sheep',name:'뭉실이',s:'sheep',fx:[19,20],shop:'clothes'},{id:'turtle',name:'느림보 박사',s:'turtle',fx:[28,20],shop:'dex'},{id:'flora',name:'꽃님이',s:'flora',z:[85,40,95,43]},{id:'otter',name:'수달수달',s:'otter',z:[98,42,107,47]}];
 const TREES=[],ROCKS=[],FLW=[];const OBJ=new Int16Array(MW*MH).fill(-1);
 const inR=(x,y,r)=>x>=r[0]&&x<=r[2]&&y>=r[1]&&y<=r[3];
 (function genMap(){for(let y=0;y<MH;y++){MAP[y]=[];for(let x=0;x<MW;x++){const d=x<MW0?Math.min(x,y,MW0-1-x,MH-1-y):Math.min(x-82,y,MW-1-x,MH-1-y);const w=(Math.sin(x*.7+y*.3)+Math.cos(y*.8-x*.2))>1.1?1:0;let t=d<3+w?SEA:d<5+w?SAND:GR;if(x>=MW0&&x<=82)t=SEA;
@@ -254,6 +254,7 @@ for(let i=0;i<20000;i++){const x=4+Math.floor(R()*(MW0-8)),y=4+Math.floor(R()*(M
 if(t===FOR&&nf<80){TREES.push({x,y,k:'forest'});nf++}else if(t===GR&&nt<60&&R()<.35){TREES.push({x,y,k:'fruit',fr:FRT[Math.floor(R()*4)]});nt++}else if(t===SAND&&y>=48&&np<12&&!near(x,y,2)){TREES.push({x,y,k:'palm',fr:'coconut'});np++}else continue;OBJ[y*MW+x]=TREES.length-1}
 for(let i=0;i<20000&&ROCKS.length<10;i++){const x=4+Math.floor(R()*(MW0-8)),y=4+Math.floor(R()*(MH-8));const t=MAP[y][x];if((t===GR||t===FOR)&&ok(x,y)){ROCKS.push({x,y});OBJ[y*MW+x]=1000+ROCKS.length-1}}
 const FC=['#ff6b81','#ffd84a','#ff9fd0','#ffffff','#b48aff'];for(let i=0;i<4000&&FLW.length<40;i++){const x=6+Math.floor(R()*30),y=26+Math.floor(R()*22);if(MAP[y][x]===GR&&OBJ[y*MW+x]<0&&!EX.some(r=>inR(x,y,r))&&!FLW.some(f=>f[0]===x&&f[1]===y))FLW.push([x,y,FC[Math.floor(R()*5)]])}
+{const OR=['cherry','lemon','kiwi'];let oi=0;for(let y=24;y<=34;y+=3)for(let x=86;x<=95;x+=3){if(y===30)continue;if(MAP[y][x]===GR&&OBJ[y*MW+x]<0){TREES.push({x,y,k:'fruit',fr:OR[oi++%3]});OBJ[y*MW+x]=TREES.length-1}}}
 {const R2=rng(20261126);let ef=0,et=0,ep=0;for(let i=0;i<20000;i++){const x=84+Math.floor(R2()*(MW-88)),y=4+Math.floor(R2()*(MH-8));const t=MAP[y][x];if(!ok(x,y))continue;if(t===FOR&&ef<55){TREES.push({x,y,k:'forest'});ef++}else if(t===GR&&et<30&&R2()<.3){TREES.push({x,y,k:'fruit',fr:FRT[Math.floor(R2()*4)]});et++}else if(t===SAND&&y>=48&&ep<6&&!near(x,y,2)){TREES.push({x,y,k:'palm',fr:'coconut'});ep++}else continue;OBJ[y*MW+x]=TREES.length-1}
 let er=0;for(let i=0;i<8000&&er<6;i++){const x=84+Math.floor(R2()*(MW-88)),y=4+Math.floor(R2()*(MH-8));const t=MAP[y][x];if((t===GR||t===FOR)&&ok(x,y)){ROCKS.push({x,y});OBJ[y*MW+x]=1000+ROCKS.length-1;er++}}
 for(let i=0;i<6000&&FLW.length<75;i++){const x=86+Math.floor(R2()*20),y=24+Math.floor(R2()*22);if(MAP[y][x]===GR&&OBJ[y*MW+x]<0&&!FLW.some(f=>f[0]===x&&f[1]===y))FLW.push([x,y,FC[Math.floor(R2()*5)]])}}})();
@@ -736,15 +737,15 @@ def('fishcup','낚시 대회 우승컵',2500,spr(DSPR.trophy[0],{k:'#2a4a7a',y:'
 def('islandcup','섬 트로피',5000,spr(DSPR.trophy[0],{k:'#7a3a5a',y:'#ff9fc0',Y:'#fff0f6',b:'#8a5a32'}),'decor',{buy:0});
 def('cake','기념일 케이크',500,spr(["......y.........","......r.........","....kkkkkk......","...kwwwwwwk.....","...kpwpwpwk.....","...kwwwwwwk.....","..kkkkkkkkkk....","..kbbbbbbbbk....","..kpppppppppk...","..kbbbbbbbbk....","..kkkkkkkkkk...."],{k:'#7a4a3a',y:'#ffd84a',r:'#ff6a3a',w:'#ffffff',p:'#ff8fb0',b:'#f0c890'}),'decor',{buy:0});
 
-Object.assign(SC.museum,{w:16,h:10,top:3,doors:[7,8],name:'박물관 로비',arch:{2:'m_fish',6:'m_bug',9:'m_fossil',13:'m_nature'}});
-SC.m_fish={w:22,h:10,top:4,doors:[10,11],back:['museum',2,3],name:'수족관',st:'aqua'};SC.m_bug={w:20,h:10,top:4,doors:[9,10],back:['museum',6,3],name:'곤충관',st:'bug'};
-SC.m_fossil={w:18,h:11,top:3,doors:[8,9],back:['museum',9,3],name:'화석관',st:'stone'};SC.m_nature={w:24,h:10,top:4,doors:[11,12],back:['museum',13,3],name:'자연관',st:'wood'};
+Object.assign(SC.museum,{w:22,h:10,top:3,doors:[10,11],name:'박물관 로비',arch:{2:'m_fish',5:'m_myst',8:'m_bug',11:'m_carni',14:'m_fossil',17:'m_dino',20:'m_nature'}});
+SC.m_fish={w:22,h:10,top:4,doors:[10,11],back:['museum',2,3],name:'수족관',st:'aqua'};SC.m_bug={w:20,h:10,top:4,doors:[9,10],back:['museum',8,3],name:'곤충관',st:'bug'};
+SC.m_fossil={w:18,h:11,top:3,doors:[8,9],back:['museum',14,3],name:'화석관',st:'stone'};SC.m_nature={w:24,h:10,top:4,doors:[11,12],back:['museum',20,3],name:'자연관',st:'wood'};
 Object.assign(SC.home,{w:14,h:10,top:2,doors:[7]});
 const WINS={m_fish:[{k:'fish',n:'바다 수족관',x0:1,x1:7,ids:FISH.filter(v=>v[5]==='sea').map(v=>v[0])},{k:'fish',n:'강 수족관',x0:8,x1:13,ids:FISH.filter(v=>v[5]==='river').map(v=>v[0])},{k:'fish',n:'호수 수족관',x0:14,x1:20,ids:FISH.filter(v=>v[5]==='lake').map(v=>v[0])}],
 m_bug:[{k:'bug',n:'나비 정원',x0:1,x1:7,ids:['wbf','ybf','tbf','bbf','moth','lady','bee']},{k:'bug',n:'물가 곤충관',x0:8,x1:12,ids:['dfly','bdfly','ffly','hcrab']},{k:'bug',n:'숲 곤충관',x0:13,x1:18,ids:['cicada','stag','rhino','gstag']}],
 m_nature:[{k:'beach',n:'바닷가 전시',x0:1,x1:5,ids:BEACH.map(v=>v[0])},{k:'mush',n:'숲속 버섯',x0:6,x1:9,ids:MUSH.map(v=>v[0])},{k:'crop',n:'농작물 진열대',x0:10,x1:17,ids:CROPS.map(v=>v[0])},{k:'fruit',n:'과일 바구니',x0:18,x1:22,ids:FRUITS.map(v=>v[0])}]};
 const PEDS={m_fossil:{}};FOSS.forEach((f,i)=>{PEDS.m_fossil[(3+(i%5)*3)+','+(i<5?5:8)]=f[0]});
-const FIXS={museum:{'1,8':'palm','14,8':'palm','4,6':'bench','11,6':'bench'},m_fish:{'1,8':'palm','20,8':'palm','6,7':'bench','15,7':'bench'},m_bug:{'1,8':'palm','18,8':'palm','9,7':'bench'},m_fossil:{'1,9':'palm','16,9':'palm'},m_nature:{'1,8':'palm','22,8':'palm','7,7':'bench','16,7':'bench'},home:{'2,2':'fire','3,2':'fire','12,2':'lamp','1,8':'palm','12,8':'palm'}};
+const FIXS={museum:{'1,8':'palm','20,8':'palm','5,6':'bench','16,6':'bench'},m_fish:{'1,8':'palm','20,8':'palm','6,7':'bench','15,7':'bench'},m_bug:{'1,8':'palm','18,8':'palm','9,7':'bench'},m_fossil:{'1,9':'palm','16,9':'palm'},m_nature:{'1,8':'palm','22,8':'palm','7,7':'bench','16,7':'bench'},home:{'2,2':'fire','3,2':'fire','12,2':'lamp','1,8':'palm','12,8':'palm'}};
 const MUSEUMS=['museum','m_fish','m_bug','m_fossil','m_nature'];
 function itile(x,y){const sc=SC[S.scene];if(!sc||x<0||y<0||x>=sc.w||y>=sc.h)return'void';if(y===sc.h-1)return sc.doors.includes(x)?'door':'wall';if(x===0||x===sc.w-1)return'wall';if(y<sc.top)return sc.arch&&sc.arch[x]&&y===sc.top-1?'arch':'wall';return'floor'}
 function furnAt(x,y,flat){for(let i=0;i<S.house.length;i++){const[ax,ay,id]=S.house[i],it=IT[id],f=it.fp||[1,1];if(flat!==undefined&&!!it.flat!==flat)continue;if(x>=ax&&x<ax+f[0]&&y<=ay&&y>ay-f[1])return i}return-1}
@@ -818,7 +819,7 @@ else R(home?'#8a6a4a':st.dark,X,Y,T,T)}
 if(sc.arch)for(const ax in sc.arch){const X=+ax*T,nm=sc.arch[ax];const ic=IT[{m_fish:'mackerel',m_bug:'ybf',m_fossil:'ammo',m_nature:'carrot',m_fish2:'koi',m_bug2:'morpho',m_fossil2:'trice',m_nature2:'tulip'}[nm]||'mackerel'].ic;R('#8a6a42',X+1,4,14,13);R('#fff8e8',X+2,5,12,11);ctx.drawImage(ic,0,0,ic.width,ic.height,X+3,6,10,Math.round(10*ic.height/ic.width))}
 (WINS[S.scene]||[]).forEach(w=>{const X0=w.x0*T+4,X1=(w.x1+1)*T-4;drawWin(w,X0,10,X1,sc.top*T-12);R('#e8dcc0',(X0+X1)/2-6,2,12,3);ctx.fillStyle='rgba(255,236,170,.10)';ctx.fillRect(X0,sc.top*T,X1-X0,30)});
 if(WINS[S.scene])for(let x=1;x<sc.w-1;x++){const X=x*T;R('#c8a050',X,sc.top*T+3,T,2);if(x%2)R('#a07a30',X+7,sc.top*T+3,2,5)}
-if(S.scene==='museum'){R('#c8b088',5*T,4*T+4,6*T,3*T);R('#e8d4b0',5*T+3,4*T+7,6*T-6,3*T-6);const ic=IT.trophy.ic;ctx.drawImage(ic,8*T-(ic.width>>1),5*T+6)}
+if(S.scene==='museum'){R('#c8b088',8*T,4*T+4,6*T,3*T);R('#e8d4b0',8*T+3,4*T+7,6*T-6,3*T-6);const ic=IT.trophy.ic;ctx.drawImage(ic,11*T-(ic.width>>1),5*T+6)}
 if(home){const fx=2*T;R('#c87050',fx,4,32,24);for(let r=0;r<5;r++){R('#b05a40',fx,4+r*5,32,1);for(let c=0;c<4;c++)R('#b05a40',fx+c*8+(r%2?4:0),4+r*5,1,5)}R('#c8a880',fx-3,2,38,4);R('#1e1410',fx+7,12,18,16);const fl=Math.floor(tm*8)%3;R('#ff6a2a',fx+9,20-fl,14,8+fl);R('#ffb02a',fx+11,22-fl,10,6+fl);R('#fff08a',fx+14,24,4,4);R('#6a4a3a',fx+8,27,16,2);R('#a08070',fx-2,2*T,36,5);if(night){ctx.fillStyle='rgba(255,160,80,.18)';ctx.beginPath();ctx.arc(fx+16,2*T+6,30,0,7);ctx.fill()}
 const kx=7*T+2,swing=Math.round(Math.sin(tm*2.5)*3);R('#6a3a22',kx,1,12,28);R('#8a5030',kx+1,2,10,26);R('#ffffff',kx+2,4,8,8);R('#3a2a20',kx+6,5,1,4);R('#3a2a20',kx+6,8,3,1);R('#1e1410',kx+3,15,6,12);R('#ffcc33',kx+5+swing,17,2,8);R('#ffcc33',kx+4+swing,24,4,3);
 const wx=10*T,sky=night?'#2a3a6a':'#bfe6ff';R('#ffffff',wx,3,30,25);R(sky,wx+2,5,12,10);R(sky,wx+16,5,12,10);R(sky,wx+2,17,12,9);R(sky,wx+16,17,12,9);if(!night){ctx.fillStyle='rgba(255,250,220,.22)';ctx.beginPath();ctx.moveTo(wx,2*T);ctx.lineTo(wx+30,2*T);ctx.lineTo(wx+14,6*T);ctx.lineTo(wx-16,6*T);ctx.fill()}
@@ -2051,40 +2052,46 @@ DEX.push(['dino','공룡 화석',DINO.flatMap(([k])=>['head','body','tail'].map(
 DEXN=DEX.reduce((a,d)=>a+d[2].length,0);{const d=ACH.find(v=>v[0]==='dex');if(d)d[3]=[20,60,120,DEXN]}
 const kday=()=>dyKey();const khr=()=>gHour();
 // ---------- 박물관: 신비관 · 공룡관 ----------
-Object.assign(SC.museum.arch,{4:'m_myst',11:'m_dino'});MUSEUMS.push('m_myst','m_dino');
-SC.m_myst={w:16,h:10,top:4,doors:[7,8],back:['museum',4,3],name:'신비관',st:'myst'};
+MUSEUMS.push('m_myst','m_dino');
+SC.m_myst={w:16,h:10,top:4,doors:[7,8],back:['museum',5,3],name:'신비관',st:'myst'};
 MST.myst={floor:(X,Y,x,y)=>{R((x+y)%2?'#161a3a':'#121634',X,Y,T,T);R('#1c2246',X,Y,T,1);const h=hash(x,y);if(h%9===0)R('#3a4080',X+(h>>3)%14,Y+(h>>5)%14,1,1)},wall:'#0c1028',line:'#10163a',dark:'#080c20'};
 WINS.m_myst=[{k:'fish',n:'신비한 물고기',x0:1,x1:6,ids:MYF.map(v=>v[0])},{k:'plant',n:'안개 섬 식물',x0:7,x1:9,ids:MYP.map(v=>v[0])},{k:'beach',n:'보석 · 별',x0:10,x1:14,ids:['amethyst','moonstone','rbcrystal','starfrag']}];
 const MPED={'7,6':'rbcrystal','8,6':'rbcrystal','3,6':'amethyst','12,6':'moonstone','3,8':'starfrag','12,8':'aurtrout'};
 FIXS.m_myst={};for(const k in MPED)FIXS.m_myst[k]='mped';
 const mglow=(x,y,r,col,a)=>{const gr=ctx.createRadialGradient(x,y,1,x,y,r);gr.addColorStop(0,col+a+')');gr.addColorStop(1,col+'0)');ctx.fillStyle=gr;ctx.fillRect(x-r,y-r,r*2,r*2)};
 function mAurora(W,y0,y1,al,t){const cols=[[90,255,150],[60,140,255],[150,90,255],[70,220,255]];for(let b=0;b<4;b++){const[r,gg,bb]=cols[b];for(let x=0;x<W;x+=2){const yy=y0+(y1-y0)*(b/4)+Math.sin(x/38+t*.7+b*1.3)*9+Math.sin(x/13+t*1.4+b)*3,h=8+Math.sin(x/25+t+b)*4,a=(al*(.55+.45*Math.sin(x/30+t*1.1+b*2))).toFixed(2);ctx.fillStyle=`rgba(${r},${gg},${bb},${a})`;ctx.fillRect(x,Math.round(yy),2,Math.round(h))}}}
-SC.m_dino={w:18,h:12,top:2,doors:[8,9],back:['museum',11,3],name:'공룡관',st:'dino'};
+SC.m_dino={w:26,h:12,top:3,doors:[12,13],back:['museum',17,3],name:'공룡관',st:'dino'};
 MST.dino={floor:(X,Y,x,y)=>{const h=hash(x,y);if(y<=7){R(h%3?'#22201e':'#262420',X,Y,T,T);if(h%4===0)R('#2e2a26',X+(h>>3)%10,Y+(h>>5)%10,6,3);if(h%7===0)R('#34302a',X+(h>>4)%12,Y+(h>>6)%12,3,2)}else{R(h%2?'#2e2e36':'#2a2a32',X,Y,T,T);R('#34343c',X,Y,T,1)}},wall:'#121216',line:'#18181e',dark:'#0c0c10'};
-FIXS.m_dino={};for(let x=1;x<=16;x++){for(let y=2;y<=7;y++)FIXS.m_dino[x+','+y]='pit';FIXS.m_dino[x+','+8]='rail'}
+FIXS.m_dino={};for(let x=1;x<=24;x++){for(let y=3;y<=7;y++)FIXS.m_dino[x+','+y]='pit';FIXS.m_dino[x+','+8]='rail'}
 const dinoDone=k=>{const M=S.museum||{};return['head','body','tail'].every(p=>M[k+'_'+p])};
 function drawDino(k,X,Y,M){const has=p=>M[k+'_'+p],r=(x,y,w,h)=>{R('#8a7458',X+x,Y+y+1,w,h);R('#f0e4c8',X+x,Y+y,w,h)};
 if(k==='tr'){if(has('tail')){r(0,30,16,3);r(14,27,12,3);r(24,24,10,3);for(let i=0;i<4;i++)r(4+i*5,28,1,4)}if(has('body')){r(32,18,26,7);for(let i=0;i<6;i++){r(34+i*4,12,2,7);r(34+i*4,25,1,6)}r(36,25,3,18);r(50,25,3,18);r(33,42,8,2);r(47,42,8,2);r(56,22,5,2);r(59,22,2,4);R('#5a5a60',X+42,Y+25,1,20)}if(has('head')){r(56,4,7,15);r(58,-2,18,10);r(66,6,12,4);R('#1a1410',X+70,Y+1,3,3);R('#1a1410',X+62,Y+2,4,3);for(let i=0;i<4;i++)R('#ffffff',X+64+i*3,Y+8,1,2);R('#5a5a60',X+60,Y+12,1,32)}}
 else{if(has('tail')){r(0,38,20,3);r(16,34,14,4);for(let i=0;i<4;i++)r(3+i*5,36,1,4)}if(has('body')){r(28,24,34,10);for(let i=0;i<7;i++){r(30+i*4,19,2,7);r(30+i*4,33,1,6)}r(31,34,4,18);r(55,34,4,18);r(29,51,8,2);r(53,51,8,2);R('#5a5a60',X+45,Y+34,1,20)}if(has('head')){for(let k2=0;k2<12;k2++)r(58+k2*1.2,22-k2*3.2,4,4);r(70,-16,10,7);r(78,-14,6,4);R('#1a1410',X+75,Y-14,2,2);R('#5a5a60',X+72,Y-8,1,62)}}}
+function drawBig(k,X,Y,M){const has=M[k];ctx.globalAlpha=has?1:.22;const r=(x,y,w,h)=>{R(has?'#8a7458':'#3a3a42',X+x,Y+y+1,w,h);R(has?'#f0e4c8':'#6a6a72',X+x,Y+y,w,h)};
+if(k==='raptor'){r(0,10,12,2);r(10,6,14,5);for(let i=0;i<4;i++)r(12+i*3,3,1,4);r(13,11,2,10);r(19,11,2,10);r(22,0,4,8);r(24,-2,10,5);R('#1a1410',X+30,Y-1,2,2);r(24,7,4,2)}
+else if(k==='stego'){r(0,14,16,3);r(14,8,30,9);[[16,2],[22,-2],[28,-3],[34,0],[40,4]].forEach(([x,y])=>{r(x,y,5,6);r(x+1,y-2,3,2)});r(17,17,3,12);r(37,17,3,12);r(43,10,10,6);R('#1a1410',X+50,Y+11,1,1);r(0,10,3,3);r(2,8,2,2)}
+else if(k==='trice'){r(0,14,12,3);r(10,8,26,10);for(let i=0;i<5;i++)r(12+i*4,4,2,6);r(13,18,3,11);r(30,18,3,11);r(32,2,14,16);r(44,0,8,3);r(46,10,10,3);r(52,14,6,4);R('#1a1410',X+40,Y+7,2,2)}
+else if(k==='ptera'){const f=Math.sin(nowS()/400)*2;r(14,6+f,14,4);r(0,4,14,2);r(28,4,14,2);r(2,6,10,1);r(30,6,10,1);r(26,2+f,10,4);r(34,0+f,8,3);R('#1a1410',X+30,Y+3+f,1,1);R('#5a5a60',X+21,Y-30,1,36)}
+ctx.globalAlpha=1}
 function drawTriceGhost(X,Y){ctx.globalAlpha=.3;const r=(x,y,w,h)=>{R('#3a3a42',X+x,Y+y+1,w,h);R('#6a6a72',X+x,Y+y,w,h)};r(0,22,16,3);r(14,14,30,10);for(let i=0;i<6;i++)r(16+i*4,9,2,7);r(18,24,4,14);r(38,24,4,14);r(42,6,16,18);r(56,2,10,3);r(56,12,12,3);r(64,18,8,4);ctx.globalAlpha=1}
 const dspot=(x,y,rw,a)=>{const gr=ctx.createRadialGradient(x,y,4,x,y,rw);gr.addColorStop(0,`rgba(255,236,190,${a})`);gr.addColorStop(1,'rgba(255,236,190,0)');ctx.fillStyle=gr;ctx.beginPath();ctx.ellipse(x,y,rw,rw*.55,0,0,7);ctx.fill()};
 {const _slD=sceneL;sceneL=function(L){_slD(L);const M=S.museum||{},t=nowS()/1000;
-if(S.scene==='museum')L.push([0,()=>{[[4,'#2a2a52'],[11,'#8a7a5a']].forEach(([ax,c])=>{const X=ax*T;R('#8a6a42',X+1,4,14,13);R(c,X+2,5,12,11);if(ax===4){R('#5affb0',X+3,7,10,2);R('#7ab0ff',X+3,9,10,2);R('#b08aff',X+3,11,10,2);R('#ffffff',X+7,8,1,1)}else{R('#f4ead4',X+4,9,8,2);R('#f4ead4',X+3,8,3,4);R('#f4ead4',X+10,8,3,4)}})}]);
+if(S.scene==='museum')L.push([0,()=>{[[5,'#2a2a52'],[17,'#8a7a5a']].forEach(([ax,c])=>{const X=ax*T;R('#8a6a42',X+1,4,14,13);R(c,X+2,5,12,11);if(ax===5){R('#5affb0',X+3,7,10,2);R('#7ab0ff',X+3,9,10,2);R('#b08aff',X+3,11,10,2);R('#ffffff',X+7,8,1,1)}else{R('#f4ead4',X+4,9,8,2);R('#f4ead4',X+3,8,3,4);R('#f4ead4',X+10,8,3,4)}})}]);
 if(S.scene==='m_myst'){const W=SC.m_myst.w*T;L.push([0,()=>{mAurora(W,0,40,.55,t);mAurora(W,4*T,9*T,.14,t)}]);
 for(const k in MPED){const[x,y]=k.split(',').map(Number),id=MPED[k];if(id==='rbcrystal'&&x===8)continue;const big=id==='rbcrystal';const X=big?8*T:x*T+8,Y=y*T+12,has=M[id];
 L.push([Y+3,()=>{R('rgba(0,0,0,.3)',X-(big?18:9),Y+2,big?36:18,5);R('#2a2a48',X-(big?16:8),Y-6,big?32:16,10);R('#3a3a60',X-(big?16:8),Y-6,big?32:16,2);
 if(has){const b=Math.sin(t*2)*2;mglow(X,Y-16,big?30:14,big?'rgba(255,180,240,':'rgba(160,220,255,',(.35+.15*Math.sin(t*2)).toFixed(2));const ic=IT[id].ic,sc=big?2:1;ctx.drawImage(ic,X-ic.width*sc/2,Y-12-ic.height*sc+b,ic.width*sc,ic.height*sc)}else{R('rgba(160,170,220,.25)',X-4,Y-16,8,8);R('rgba(200,210,255,.35)',X-1,Y-14,2,4)}}])}
 L.push([9e9,()=>{for(let i=0;i<26;i++){const x=hash(i,11)%W,y=(hash(i,13)%100)+60-((t*8+i*11)%60);if(Math.sin(t*3+i)>-.2)R(['#9affc0','#8ab8ff','#d0a8ff'][i%3],x,y,1,1)}}])}
-if(S.scene==='m_dino'){const W=SC.m_dino.w*T;L.push([1,()=>{R('#1a1816',0,8*T-6,W,6);dspot(4.5*T,6.5*T,70,.32);dspot(11.5*T,7*T,80,.34);dspot(15.5*T,4.5*T,40,.12);
-[[1.4*T,7*T,90],[8.6*T,7.6*T,110]].forEach(([x,y,w])=>{R('#3a3630',x,y,w,8);R('#4a4640',x,y,w,2)});
-drawDino('tr',1.6*T,2.6*T,M);drawDino('br',8.4*T,3.2*T,M);drawTriceGhost(14.2*T,2.2*T);
-[[4.5*T,7.9*T],[11.5*T,8.3*T],[15.6*T,6.4*T]].forEach(([x,y])=>{R('#1a2a3a',x-14,y-4,28,7);R('#3a5a7a',x-14,y-4,28,1)});
-for(let i=0;i<24;i++){const x=hash(i,3)%W,y=2*T+((hash(i,5)%90)+t*5*(1+i%3))%(5*T);if((Math.abs(x-4.5*T)<60||Math.abs(x-11.5*T)<70)&&Math.sin(t*2+i)>0)R('rgba(255,240,210,.6)',x,y,1,1)}}]);
-L.push([8*T+14,()=>{R('#7a7a84',T,8*T+6,16*T,2);R('#a8a8b0',T,8*T+6,16*T,1);for(let x=T+4;x<17*T;x+=12)R('#6a6a72',x,8*T+8,2,8);R('#7a7a84',T,8*T+15,16*T,1);for(let x=T+8;x<17*T;x+=40)R(`rgba(255,240,200,${(.5+.25*Math.sin(t*1.2+x)).toFixed(2)})`,x,8*T+7,6,1)}]);
+if(S.scene==='m_dino'){const W=SC.m_dino.w*T;L.push([1,()=>{R('#1a1816',0,8*T-6,W,6);dspot(2.2*T,7*T,40,.3);dspot(7*T,7*T,70,.32);dspot(12.2*T,6.6*T,60,.3);dspot(17.8*T,7*T,80,.34);dspot(22.8*T,7*T,55,.3);
+[[0.8*T,7.2*T,44],[4.2*T,7.2*T,90],[9.8*T,7.2*T,76],[15*T,7.4*T,100],[20.8*T,7.2*T,64]].forEach(([x,y,w])=>{R('#3a3630',x,y,w,8);R('#4a4640',x,y,w,2)});
+drawDino('tr',4.2*T,3.6*T,M);drawDino('br',14.8*T,4*T,M);drawBig('raptor',1*T,5.2*T,M);drawBig('stego',10*T,4.8*T,M);drawBig('trice',21*T,4.6*T,M);drawBig('ptera',10.6*T,3.1*T,M);
+[[2.2*T,8*T],[7*T,8*T],[12.2*T,8*T],[17.8*T,8.2*T],[22.8*T,8*T]].forEach(([x,y])=>{R('#1a2a3a',x-14,y-4,28,7);R('#3a5a7a',x-14,y-4,28,1)});
+for(let i=0;i<24;i++){const x=hash(i,3)%W,y=2*T+((hash(i,5)%90)+t*5*(1+i%3))%(5*T);if(Math.sin(t*2+i)>0)R('rgba(255,240,210,.6)',x,y,1,1)}}]);
+L.push([8*T+14,()=>{R('#7a7a84',T,8*T+6,24*T,2);R('#a8a8b0',T,8*T+6,24*T,1);for(let x=T+4;x<25*T;x+=12)R('#6a6a72',x,8*T+8,2,8);R('#7a7a84',T,8*T+15,24*T,1);for(let x=T+8;x<25*T;x+=40)R(`rgba(255,240,200,${(.5+.25*Math.sin(t*1.2+x)).toFixed(2)})`,x,8*T+7,6,1)}]);
 L.push([9e9,()=>{const g=ctx.createLinearGradient(0,0,0,2*T);g.addColorStop(0,'rgba(0,0,0,.5)');g.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=g;ctx.fillRect(0,0,W,2*T)}])}}}
-{const _esD=enterScene;enterScene=function(nm){_esD(nm);if(nm==='m_dino')toast(`공룡관 · ${DINO.filter(d=>dinoDone(d[0])).length}/2 완성 · 난간 앞에서 Space로 자세히 봐요`);if(nm==='m_myst')toast(`신비관 · 오로라 아래 신비한 것들을 전시해요`)}}
+{const _esD=enterScene;enterScene=function(nm){_esD(nm);if(nm==='m_dino'){const M=S.museum||{};const n=DINO.filter(d=>dinoDone(d[0])).length+['raptor','stego','trice','ptera'].filter(k=>M[k]).length;toast(`공룡관 · 뼈 ${n}/6 · 난간 앞에서 Space로 자세히 봐요`)};if(nm==='m_myst')toast(`신비관 · 오로라 아래 신비한 것들을 전시해요`)}}
 {const _lkD=lookIn;lookIn=function(){const{tx,ty}=front();
-if(S.scene==='m_dino'&&FIXS.m_dino[tx+','+ty]==='rail'){const k=tx<=7?'tr':tx<=14?'br':null;if(!k)return{l:'??? (준비 중)',fn:()=>say('',['아직 비어 있는 자리예요.','언젠가 새로운 공룡이 올지도…'])};const d=DINO.find(v=>v[0]===k),M=S.museum||{};const have=['head','body','tail'].filter(p=>M[k+'_'+p]);return{l:d[1]+(dinoDone(k)?'':` (${have.length}/3)`),fn:()=>say('',dinoDone(k)?[`${d[1]}예요.`,'둘이 모은 조각으로 완성했어요!']:[`${d[1]}: ${have.length}/3 조각 (${have.map(p=>DPN[p]).join(', ')||'아직 없음'})`,'화석을 파면 가끔 공룡 뼈 조각이 나와요. 박사님께 기증해요!'])}}
+if(S.scene==='m_dino'&&FIXS.m_dino[tx+','+ty]==='rail'){const bz=tx<=3?'raptor':tx<=9?'tr':tx<=14?'stego':tx<=20?'br':'trice';if(bz!=='tr'&&bz!=='br'){const M=S.museum||{},it=IT[bz],has=M[bz]||(bz==='stego'&&M.ptera);return{l:bz==='stego'?'스테고사우루스 · 프테라노돈':it.n.replace(' 뼈',''),fn:()=>say('',bz==='stego'?[`스테고사우루스: ${M.stego?'전시 중!':'아직 없어요'}`,`하늘의 프테라노돈: ${M.ptera?'전시 중!':'아직 없어요'}`]:[`${it.n}: ${M[bz]?'전시 중! 둘이 찾은 뼈예요.':'아직 없어요.'}`,M[bz]?'':'화석관 2관에서 나오는 뼈를 박사님께 기증하면 여기 전시돼요.'].filter(Boolean))}}const k=bz;const d=DINO.find(v=>v[0]===k),M=S.museum||{};const have=['head','body','tail'].filter(p=>M[k+'_'+p]);return{l:d[1]+(dinoDone(k)?'':` (${have.length}/3)`),fn:()=>say('',dinoDone(k)?[`${d[1]}예요.`,'둘이 모은 조각으로 완성했어요!']:[`${d[1]}: ${have.length}/3 조각 (${have.map(p=>DPN[p]).join(', ')||'아직 없음'})`,'화석을 파면 가끔 공룡 뼈 조각이 나와요. 박사님께 기증해요!'])}}
 if(S.scene==='m_myst'&&MPED[tx+','+ty]){const id=MPED[tx+','+ty],M=S.museum||{};return{l:M[id]?IT[id].n:'빈 받침대',fn:()=>say('',M[id]?[`${IT[id].n} · ${String(M[id].by||'')} 기증`,'찾은 곳: '+(IT[id].where||'?')]:['아직 비어 있어요.',`${jo(IT[id].n,'을','를')} 기증하면 여기서 빛나요.`])}}
 return _lkD()}}
 // 화석 캐면 가끔 공룡 조각
@@ -2160,6 +2167,10 @@ function fishPick(rid){const r=RCP.find(v=>v[0]===rid),fs=r[2].find(s=>s[0]==='@
 const cg=$('cg');if(cg){const o=cg.onchange;cg.onchange=e=>{o(e);cookUI()}}}}
 TIPS.push('작물이 자라는 중간에 할 일이 생겨요: 🐛 벌레 쫓기, 🪵 키 큰 작물 지지대 세우기, 🌼 꽃이 피면 꽃가루 옮기기. 안 해 주면 덜 자라요.');
 TIPS.push('목장 동물은 하루 3번(8시간마다) 밥을 주고 달걀·우유·양털을 받을 수 있어요.');
+// 공룡 화석은 공룡관으로
+{const DZ=['raptor','ptera','stego','trice','trex','tooth','foot','bone','dinoegg'],a1=FOSS.map(f=>f[0]).filter(i=>!DZ.includes(i)&&!FO2.includes(i)),a2=FO2.filter(i=>!DZ.includes(i));
+PEDS.m_fossil={};PEDS.m_fossil2={};[[a1,PEDS.m_fossil],[a2,PEDS.m_fossil2]].forEach(([A,P])=>A.forEach((id,j)=>{P[(3+(j%5)*3)+','+(j<5?5:8)]=id}));
+PEDS.m_dino={};[['trex',3],['tooth',6],['foot',9],['bone',17],['dinoegg',20]].forEach(([id,x])=>{PEDS.m_dino[x+',10']=id})}
 
 // ===== pj.js : 하늘 이벤트 (유성우 · 오로라 · 무지개 · 별자리 망원경) =====
 PF.push('mtW','cstD');
@@ -2489,16 +2500,73 @@ const near=Object.keys(S.plots).filter(k=>!k.startsWith('g')).map(k=>[k,S.plots[
 if(!near.length||Math.random()>.55)return;const[x,y]=rnd(near);const pool=BUGS.filter(b=>(b[5]==='meadow'||b[5]==='flower')&&timeOk(b[6]));const bid=(pool.length?rnd(pool):rnd(BUGS))[0];
 for(let k=0;k<8;k++){const bx=x+Math.floor(Math.random()*5)-2,by=y+Math.floor(Math.random()*5)-2;if((bx!==x||by!==y)&&!solid(bx,by)){spawnBugAt(bx,by,bid);break}}},5000);
 // 박물관 식충식물관
-Object.assign(SC.museum.arch,{8:'m_carni'});MUSEUMS.push('m_carni');
-SC.m_carni={w:14,h:10,top:4,doors:[6,7],back:['museum',8,3],name:'식충식물관',st:'carni'};
+MUSEUMS.push('m_carni');
+SC.m_carni={w:14,h:10,top:4,doors:[6,7],back:['museum',11,3],name:'식충식물관',st:'carni'};
 MST.carni={floor:(X,Y,x,y)=>{const h=hash(x,y);R((x+y)%2?'#5a7a4a':'#52704a',X,Y,T,T);if(h%4===0)R('#6a8a5a',X+(h>>3)%12,Y+(h>>5)%12,3,2);if(h%9===0)R('#8ab870',X+(h>>4)%14,Y+(h>>6)%14,1,1)},wall:'#cfe8d8',line:'#ffffff',dark:'#3a5a3a'};
 WINS.m_carni=[{k:'plant',n:'식충식물 온실',x0:1,x1:12,ids:CARNI.map(v=>v[0])}];FIXS.m_carni={'1,8':'cpot','12,8':'cpot','3,6':'cpot','10,6':'cpot'};
 {const _slP=sceneL;sceneL=function(L){_slP(L);const t=nowS()/1000;
-if(S.scene==='museum')L.push([0,()=>{const X=8*T;R('#8a6a42',X+1,4,14,13);R('#3a6a3a',X+2,5,12,11);R('#5ab84a',X+4,9,8,3);R('#d03a3a',X+5,10,6,1);R('#e8f0a0',X+5,8,1,1);R('#e8f0a0',X+8,8,1,1)}]);
+if(S.scene==='museum')L.push([0,()=>{const X=11*T;R('#8a6a42',X+1,4,14,13);R('#3a6a3a',X+2,5,12,11);R('#5ab84a',X+4,9,8,3);R('#d03a3a',X+5,10,6,1);R('#e8f0a0',X+5,8,1,1);R('#e8f0a0',X+8,8,1,1)}]);
 if(S.scene!=='m_carni')return;for(const k in FIXS.m_carni){const[x,y]=k.split(',').map(Number),id=CARNI[(x+y)%CARNI.length][0];L.push([y*T+15,()=>{R('#a0603a',x*T+3,y*T+9,10,7);R('#c07a4a',x*T+3,y*T+9,10,2);const ic=IT[id].ic;ctx.drawImage(ic,x*T+1,y*T-6)}])}
 L.push([9e9,()=>{for(let i=0;i<6;i++){const bx=(hash(i,9)%(12*T))+T+Math.sin(t*1.3+i)*14,by=(hash(i,4)%(4*T))+4*T+Math.cos(t*1.7+i)*8;if(Math.floor(t*8+i)%2){R('#ffffff',bx-2,by,2,1);R('#ffffff',bx+1,by,2,1)}R('#3a3a3a',bx,by,1,2)}}])}}
 {const _esP=enterScene;enterScene=function(nm){_esP(nm);if(nm==='m_carni'){const M=S.museum||{};toast(`식충식물관 · 전시 ${CARNI.filter(v=>M[v[0]]).length}/${CARNI.length}`)}}}
 TIPS.push('식충식물 씨앗은 화석·조개를 캐거나 잡초를 뽑다가 가끔 나와요. 랜덤 씨앗에서도 가끔 자라요! 키우면 주변에 곤충이 모이고, 박물관 식충식물관에 기증할 수 있어요.');
+
+// ===== pcm.js : 동쪽 섬 이웃 · 캠핑장 · 주간 곤충 대회 =====
+// --- 새 이웃 ---
+LINES.flora=n=>['꽃은 매일 조금씩 자라요. 우리처럼요! 💐',`${n}, 오늘 머리에 꽃 하나 꽂아 볼래요?`,'과수원 체리가 익으면 꽃잎처럼 빨개져요.','꽃 이야기는 언제든 환영이에요~ 깡총!','동쪽 섬은 바람이 꽃향기 같아요.'];
+LINES.otter=n=>['물결을 잘 봐. 찌가 쏙 들어가면 그때야!','비 오는 날엔 귀한 물고기가 더 잘 문다구.',`${n}, 오늘의 물고기 갖고 왔어?`,'수달은 물고기 냄새로 날씨를 맞혀. 진짜야.','주말마다 광장에서 대회가 열리는 거 알지?'];
+LET.flora=[n=>`${n}에게\n오늘 아침에 꽃잎에 이슬이 맺혔어요.\n너무 예뻐서 생각났어요. 💐\n- 꽃님이`,n=>`${n}에게\n꽃 한 송이 같이 넣어요.\n향기가 오래가면 좋겠어요!\n- 꽃님이`];
+LET.otter=[n=>`${n}에게\n어제 엄청 큰 놈을 놓쳤어…\n다음엔 꼭 잡을 거야!\n- 수달수달`,n=>`${n}에게\n미끼 좀 넣었어. 많이 낚아!\n- 수달수달`];
+LGIFT.flora=['tulip','flowerbed','seed_rand'];LGIFT.otter=['bait','mackerel','seabream'];
+const FSHOP=[['seed_rand',400],['tulip',600],['flowerbed',0]];
+function floraUI(){let h=head('💐 꽃님이 꽃집');h+='<p style="font-size:14px;margin:0 0 8px">어떤 꽃이 나올지 모르는 씨앗도 있어요!</p>';FSHOP.forEach(([id,p])=>{const it=IT[id];if(!it)return;const pr=p||it.p||500;h+=`<div class="row"><img src="${url(id)}"><span style="flex:1"><b>${it.n}</b><br><span class="muted" style="font-size:12px">${fmt(pr)} 코인</span></span><button class="gb" data-fb="${id}" data-p="${pr}">사기</button></div>`});
+openModal(h+'<div id="se" style="font-size:14px;min-height:20px;margin-top:8px;font-weight:700;color:#3f7a4a"></div>');document.querySelectorAll('[data-fb]').forEach(b=>b.onclick=()=>{const p=+b.dataset.p;if(S.coins<p){$('se').textContent='코인이 모자라요';return}if(!addItem(b.dataset.fb))return;S.coins-=p;save(true);beep(880,.06);$('se').textContent=IT[b.dataset.fb].n+' 샀어요!'})}
+const OFISH=()=>{const c=Object.keys(FSZ).filter(id=>IT[id]&&IT[id].r<=3);return c[hash(+dyKey(),77)%c.length]};
+function otterUI(){const id=OFISH(),it=IT[id],dk=dyKey(),done=S.otD===dk,has=S.inv.find(v=>v[0]===id),rw=Math.round((it.p||100)*2);
+say('수달수달',done?['오늘 물고기 고마웠어! 내일 또 부탁해.']:[`오늘의 물고기는 ${it.n}이야!`,has?`어? 갖고 있네! 줄래? (${fmt(rw)} 코인 줄게)`:`잡으면 갖다줘. 원래 값의 2배 ${fmt(rw)} 코인 줄게!`],()=>{if(done||!has)return;remItem(id);S.coins+=rw;S.otD=dk;S.fr.otter=S.fr.otter||{f:0,t:0,g:0};S.fr.otter.f+=2;save(true);beep(990,.07);say('수달수달',[`우와 ${it.n}! 고마워!`,`${fmt(rw)} 코인을 받았다!`])})}
+{const _tk=talk;talk=function(n){if(n.id==='flora'&&Math.random()<.5){say(n.name,['어서 와요! 꽃 구경하고 갈래요?'],floraUI);return}if(n.id==='otter'&&Math.random()<.5){otterUI();return}_tk(n)}}
+PF.push('otD','campD','bcw');
+
+// --- 캠핑장 ---
+const CAMP={x0:88,y0:44,x1:95,y1:49,fire:[93,47],logs:[[92,47,'right'],[94,47,'left'],[93,48,'up']],tent:[[89,46],[90,46]]};
+(function(){for(let y=CAMP.y0;y<=CAMP.y1;y++)for(let x=CAMP.x0;x<=CAMP.x1;x++){const o=OBJ[y*MW+x];if(o>=0&&o<1000&&TREES[o])TREES[o].gone=true;if(o>=0)OBJ[y*MW+x]=-1;if(!isWat(MAP[y][x])&&MAP[y][x]!==PATH)MAP[y][x]=GR}
+for(let i=FLW.length-1;i>=0;i--){const[x,y]=FLW[i];if(x>=CAMP.x0&&x<=CAMP.x1&&y>=CAMP.y0&&y<=CAMP.y1)FLW.splice(i,1)}
+[CAMP.fire,...CAMP.logs,...CAMP.tent].forEach(([x,y])=>{OBJ[y*MW+x]=4100});[[91,47],[93,46],[92,48],[94,48]].forEach(([x,y])=>{MAP[y][x]=PATH})})();
+const campKind=(x,y)=>x===CAMP.fire[0]&&y===CAMP.fire[1]?'fire':CAMP.logs.find(l=>l[0]===x&&l[1]===y)?'log':CAMP.tent.find(t=>t[0]===x&&t[1]===y)?'tent':null;
+const nearCamp=()=>{const x=(S.px+8)/T,y=(S.py+12)/T;return (S.scene||'out')==='out'&&x>=CAMP.x0-3&&x<=CAMP.x1+3&&y>=CAMP.y0-3&&y<=CAMP.y1+3};
+{const _sa=seatAt;seatAt=function(x,y){if((S.scene||'out')==='out'){const l=CAMP.logs.find(v=>v[0]===x&&v[1]===y);if(l)return{x,y,dir:l[2],kind:'log',camp:1}}return _sa(x,y)}}
+{const _st=seatTick;seatTick=function(dt){_st(dt);const s=S.seat;if(!s||s.ph!=='sit'||!CAMP.logs.find(v=>v[0]===s.x&&v[1]===s.y))return;
+if(s.st>10&&!s.cmg){s.cmg=1;const dk=dyKey(),fr=others().some(q=>(q.p.sc||'out')==='out'&&Math.abs((q.p.x+8)/T-93)<4&&Math.abs((q.p.y+12)/T-47)<4);if(S.campD!==dk){S.campD=dk;S.restT=Math.max(Date.now(),S.restT||0)+(fr?900000:300000);save(true);toast(fr?'둘이 캠핑장에서 불멍… 별이 반짝 ♥ (15분 행운)':isNight()?'모닥불 너머로 별이 쏟아져요… (5분 행운)':'타닥타닥… 마음이 편안해요 (5분 행운)')}else toast(isNight()?'별이 참 많다…':'타닥타닥…')}
+if(Math.floor(s.st*1.2)%6===0&&!s._c){s._c=1;setTimeout(()=>{if(S.seat)S.seat._c=0},900);if(typeof HH!=='undefined')HH.push({x:S.px+8,y:S.py-6,t:0})}}}
+{const _lk=look;look=function(){const r=_lk();if((S.scene&&S.scene!=='out')||F)return r;if(r&&/잡기|당겨|입질/.test(r.l))return r;const{tx,ty}=front(),k=campKind(tx,ty);
+if(k==='fire')return{l:'마시멜로 굽기',fn:roast};if(k==='log')return{l:'통나무에 앉기',fn:()=>sitOn(seatAt(tx,ty))};if(k==='tent')return{l:'텐트 들여다보기',fn:()=>say('',isNight()?['텐트 안이 포근해요.','둘이 누워서 별 보면 좋겠다…']:['작은 텐트예요. 캠핑 의자랑 랜턴이 있어요.','밤에 오면 별이 잘 보여요!'])};return r}}
+{const _sd=seasonDecoL;seasonDecoL=function(L){_sd(L);if((S.scene||'out')!=='out')return;const t=nowS()/120,nt=isNight();
+// 텐트
+{const X=89*T,Y=46*T;L.push([Y+15,()=>{R('rgba(0,0,0,.2)',X-2,Y+13,36,4);ctx.fillStyle='#e8804a';ctx.beginPath();ctx.moveTo(X-2,Y+15);ctx.lineTo(X+16,Y-12);ctx.lineTo(X+34,Y+15);ctx.fill();ctx.fillStyle='#c85a2a';ctx.beginPath();ctx.moveTo(X+16,Y-12);ctx.lineTo(X+34,Y+15);ctx.lineTo(X+24,Y+15);ctx.fill();ctx.fillStyle=nt?'#ffd870':'#5a2a14';ctx.beginPath();ctx.moveTo(X+9,Y+15);ctx.lineTo(X+16,Y+1);ctx.lineTo(X+23,Y+15);ctx.fill();R('#fff0c8',X+15,Y-14,2,3);R('#5a3a20',X+15,Y-16,2,2);if(nt){ctx.fillStyle='rgba(255,216,112,.18)';ctx.beginPath();ctx.arc(X+16,Y+10,22,0,7);ctx.fill()}}])}
+// 통나무
+CAMP.logs.forEach(([x,y])=>{const X=x*T,Y=y*T;L.push([Y+14,()=>{R('rgba(0,0,0,.18)',X+1,Y+12,14,3);R('#7a4a2a',X+1,Y+5,14,8);R('#9a6a3a',X+1,Y+5,14,2);R('#c89a6a',X+1,Y+5,3,8);R('#a07040',X+2,Y+7,1,4)}])});
+// 모닥불
+{const X=93*T,Y=47*T;L.push([Y+15,()=>{R('#6a6a70',X+1,Y+10,14,4);R('#8a8a90',X+2,Y+9,3,2);R('#8a8a90',X+11,Y+9,3,2);R('#5a3a20',X+3,Y+10,10,3);const f=Math.floor(t*8)%3;R('#ff6a2a',X+4,Y+2+f,8,9-f);R('#ffb04a',X+5,Y+4+f,6,6-f);R('#fff0a0',X+7,Y+6,2,3);if(f===1)R('#ffb04a',X+8,Y-2,2,2);ctx.fillStyle=`rgba(255,170,80,${nt?.22:.08})`;ctx.beginPath();ctx.arc(X+8,Y+8,nt?40:20,0,7);ctx.fill()}])}
+// 캠핑장 팻말
+{const X=88*T,Y=44*T;L.push([Y+15,()=>{R('#6a4020',X+7,Y,2,15);R('#8a5a30',X,Y-4,16,8);R('#c89a6a',X+1,Y-3,14,6);R('#e8804a',X+3,Y-2,4,4);R('#5a8a4a',X+9,Y-2,4,4)}])}}}
+{const _sf=seasonFx;seasonFx=function(){_sf();if(!nearCamp()||!isNight())return;const t=Date.now()/1000;for(let i=0;i<70;i++){const tw=(Math.sin(t*2+i*1.3)+1)/2;if(tw<.25)continue;const x=hash(i,91)%VW,y=hash(i,93)%Math.floor(VH*.55),b=i%9===0;ctx.fillStyle=`rgba(255,250,220,${(tw*.9).toFixed(2)})`;ctx.fillRect(x,y,b?2:1,b?2:1);if(b&&tw>.8){ctx.fillRect(x-2,y,6,1);ctx.fillRect(x,y-2,1,6)}}}}
+
+// --- 주간 곤충 대회 ---
+const bugSize=id=>{const it=IT[id],b=[4,5,7,9,12,15][it.r||1]||6,v=.8+(hash(id.length*7+id.charCodeAt(0),5)%40)/100;return Math.round(b*v*(0.7+Math.random()*0.6)*10)/10};
+function submitBug(id,sz){if(!ME)return;const wk=week();Promise.resolve(NET.tx('island/bcontest/'+wk+'/'+ME,cur=>cur&&+cur.s>=sz?undefined:{n:S.name,f:id,s:sz})).then(r=>{if(r&&r.committed)setTimeout(()=>toast(`주간 곤충 대회 기록! ${IT[id].n} ${sz}cm`),2500)}).catch(()=>{})}
+{const _ct=catchThing;catchThing=function(id,verb,n=1){const r=_ct(id,verb,n);if(r&&IT[id]&&IT[id].cat==='bug'&&verb==='잡았다'){const sz=bugSize(id);S.bbest=S.bbest||{};const nb=sz>(S.bbest[id]||0);if(nb)S.bbest[id]=sz;try{if(dlg&&dlg.lines)dlg.lines[dlg.lines.length-1]+=` (${sz}cm${nb?' · 내 최고 기록!':''})`}catch(e){}submitBug(id,sz)}return r}}
+PF.push('bbest');
+def('bugcup','곤충 대회 우승컵',2500,spr(DSPR.trophy[0],{k:'#2a5a2a',y:'#8ae07a',Y:'#eaffe0',b:'#8a5a32'}),'decor',{buy:0});
+let bGiftBusy=false;
+async function checkBugGifts(){if(!ME||!NET||bGiftBusy||dlg||mOpen)return;const wk=week()-1;if(S.bcw===wk)return;bGiftBusy=true;try{const c=await NET.get('island/bcontest/'+wk);S.bcw=wk;if(c&&c[ME]){const arr=Object.entries(c).map(([k,v])=>[k,+(v&&v.s)||0]).sort((a,b)=>b[1]-a[1]);const rank=arr.findIndex(a=>a[0]===ME)+1;const coin=rank===1?10000:rank===2?5000:1000;S.coins+=coin;if(rank===1)addItem('bugcup');save(true);say('느림보 박사',[`지난주 곤충 대회 결과일세! ${S.name}, 자네는 ${rank}등이야.`,`상금 ${fmt(coin)} 코인${rank===1?'과 곤충 우승컵':''}을 받게나!`])}else save(true)}catch(e){console.error(e)}finally{bGiftBusy=false}}
+{const _cg=checkGifts;checkGifts=async function(){await _cg();if(!dlg)await checkBugGifts()}}
+function bugBoard(nb){Promise.resolve(NET.get('island/bcontest/'+week())).then(c=>{if(!nb.isConnected)return;const arr=Object.entries(c||{}).filter(([k,v])=>v&&IT[v.f]).map(([k,v])=>({k,n:String(v.n||'?').slice(0,6),f:v.f,s:+v.s||0})).sort((a,b)=>b.s-a.s);
+const d=document.createElement('div');d.innerHTML=`<h3 style="margin:14px 0 4px">🦋 주간 곤충 대회</h3><p style="font-size:14px;margin:0 0 6px"><b>이번 주 제일 큰 곤충을 잡은 사람이 우승!</b></p><p class="muted">상품: 1등 10,000 코인 + 곤충 우승컵 · 2등 5,000 · 참가 1,000</p>${arr.length?arr.map((e,i)=>`<div class="row"><b style="width:36px">${i+1}등</b><img src="${url(e.f)}"><span style="flex:1">${esc(e.n)}${e.k===ME?' (나)':''} · ${IT[e.f].n}</span><b>${e.s}cm</b></div>`).join(''):'<p>아직 기록이 없어요. 곤충을 잡으면 자동으로 참가해요!</p>'}`;nb.appendChild(d)}).catch(()=>{})}
+{const _nu=newsUI;newsUI=function(){_nu();if(newsTab==='ct'){const nb=$('nb');if(nb){const h=document.createElement('h3');h.style.margin='0 0 4px';h.textContent='🎣 주간 낚시 대회';nb.before(h);bugBoard(nb.parentNode)}}}}
+// 광장 대회 게시판 (34,28)
+PZF['34,28']='cboard';OBJ[28*MW+34]=4100;
+{const _sd2=seasonDecoL;seasonDecoL=function(L){_sd2(L);if((S.scene||'out')!=='out')return;const X=34*T,Y=28*T;L.push([Y+15,()=>{R('rgba(0,0,0,.18)',X,Y+13,16,3);R('#5a3a20',X+2,Y-2,2,17);R('#5a3a20',X+12,Y-2,2,17);R('#2a5a8a',X,Y-10,16,13);R('#e8f4ff',X+1,Y-9,14,11);R('#ffd84a',X+3,Y-8,4,5);R('#c89a20',X+4,Y-3,2,2);R('#5ab0ff',X+9,Y-7,4,2);R('#7ad07a',X+9,Y-4,4,2)}])}}
+{const _lk2=look;look=function(){const r=_lk2();if((S.scene&&S.scene!=='out')||F)return r;if(r&&/잡기|당겨|입질/.test(r.l))return r;const{tx,ty}=front();if(tx===34&&ty===28)return{l:'주간 대회 게시판',fn:()=>{newsTab='ct';newsUI()}};return r}}
 
 const BG=document.createElement('canvas');BG.width=MW*T;BG.height=MH*T;
 function buildBG(){const P=SPAL[season()];const b=BG.getContext('2d');const tufts=(X,Y,h,c,c2)=>{b.fillStyle=c;for(let k=0;k<3;k++){const px=(h>>(k*5))%13,py=(h>>(k*5+3))%12;b.fillRect(X+px,Y+py+1,1,2);b.fillRect(X+px+1,Y+py,1,2)}b.fillStyle=c2;b.fillRect(X+(h>>12)%15,Y+(h>>17)%15,1,1)};
