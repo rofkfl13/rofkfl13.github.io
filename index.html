@@ -1911,6 +1911,34 @@ if(ptN%7===0&&hasPT('love')&&!mOpen&&Math.random()<.5)petFx={x:PET.x,y:PET.y,t:n
 if(ptN%30===0&&(S.scene||'out')==='out'&&!mOpen&&nowS()-(S.ptG||0)>15*60000){const opts=[];if(hasPT('farm'))opts.push('farm');if(hasPT('expl'))opts.push('expl');if(opts.length&&Math.random()<.5){const o=rnd(opts);let id;if(o==='farm'){const cs=CROPS.filter(c=>IT['seed_'+c[0]]&&c[4]<=40);id='seed_'+rnd(cs)[0]}else id=rnd(Math.random()<.8?BEACH:FOSS)[0];if(IT[id]&&addItem(id)){S.ptG=nowS();petFx={x:PET.x,y:PET.y,t:nowS()};beep(1200,.08);toast(`${S.pet.n}이(가) ${IT[id].n}을(를) 물어 왔어요!`);save(true)}}}
 },1000);
 
+// ===== 집 가구 옮기기(드래그) + 끼임 탈출 =====
+// 끼임 탈출: 지금 서 있는 곳이 막혀 있으면 움직일 수 있게 해 줌
+{const _ph=pHit;pHit=function(x,y){if(!_ph(x,y))return false;return !_ph(S.px,S.py)}}
+function myTile(){return[Math.floor((S.px+8)/T),Math.floor((S.py+12)/T)]}
+{const _plh=placeHome;placeHome=function(id,tx,ty){const it=IT[id],f=it.fp||[1,1],[mx,my]=myTile();if(!it.flat&&mx>=tx&&mx<tx+f[0]&&my<=ty&&my>ty-f[1]){toast('내가 서 있는 자리에는 놓을 수 없어요');return}return _plh(id,tx,ty)}}
+const HM={on:false,d:null};
+function homeCam(){const sc=SC[S.scene],W=sc.w*T,H=sc.h*T,cl=(v,a,b)=>Math.max(a,Math.min(b,v));return[W<=VW?-Math.round((VW-W)/2):Math.round(cl(S.px+8-VW/2,0,W-VW)),H<=VH?-Math.round((VH-H)/2):Math.round(cl(S.py+8-VH/2,0,H-VH))]}
+function hmTile(e){const r=cv.getBoundingClientRect(),[cx,cy]=homeCam();return[Math.floor(((e.clientX-r.left)*VW/r.width+cx)/T),Math.floor(((e.clientY-r.top)*VH/r.height+cy)/T)]}
+function hmOk(i,ax,ay){const[,,id]=S.house[i],it=IT[id],f=it.fp||[1,1],[mx,my]=myTile();for(let dx=0;dx<f[0];dx++)for(let dy=0;dy<f[1];dy++){const x=ax+dx,y=ay-dy;if(itile(x,y)!=='floor'||(FIXS.home||{})[x+','+y])return false;for(let j=0;j<S.house.length;j++){if(j===i)continue;const[bx,by,bid]=S.house[j],bt=IT[bid],g=bt.fp||[1,1];if(!!bt.flat!==!!it.flat)continue;if(x>=bx&&x<bx+g[0]&&y<=by&&y>by-g[1])return false}if(!it.flat&&x===mx&&y===my)return false}return true}
+function hmSet(on){HM.on=on;HM.d=null;cv.style.touchAction=on?'none':'';hmBtn();if(on)toast('옮길 가구를 꾹 눌러 끌어다 놓아요');}
+function hmBtn(){let b=$('hmb');if(!b){b=document.createElement('button');b.id='hmb';b.style.cssText='position:absolute;right:8px;top:40px;z-index:6;padding:5px 10px;font-size:13px;border-radius:999px;background:#fff8ea;border:2px solid #c8a070;color:#5a3a22;font-weight:700';b.onclick=e=>{e.stopPropagation();hmSet(!HM.on)};$('scr').appendChild(b)}
+const show=S&&S.scene==='home'&&!mOpen;b.style.display=show?'block':'none';b.textContent=HM.on?'✓ 다 옮겼어요':'🪑 가구 옮기기';b.style.background=HM.on?'#ffd84a':'#fff8ea';if(!show&&HM.on){HM.on=false;HM.d=null;cv.style.touchAction=''}}
+setInterval(()=>{if(S&&S.name)hmBtn()},250);
+cv.addEventListener('pointerdown',e=>{if(!HM.on||S.scene!=='home')return;const[x,y]=hmTile(e);const i=furnAt(x,y,false)>=0?furnAt(x,y,false):furnAt(x,y,true);if(i<0)return;e.preventDefault();const[ax,ay]=S.house[i];HM.d={i,id:S.house[i][2],ox:x-ax,oy:y-ay,ax,ay,tx:ax,ty:ay,ok:true};try{cv.setPointerCapture(e.pointerId)}catch(_){}beep(700,.04)});
+cv.addEventListener('pointermove',e=>{const d=HM.d;if(!HM.on||!d)return;e.preventDefault();if(S.house[d.i]&&S.house[d.i][2]!==d.id){HM.d=null;return}const[x,y]=hmTile(e);d.tx=x-d.ox;d.ty=y-d.oy;d.ok=hmOk(d.i,d.tx,d.ty)});
+cv.addEventListener('pointerup',e=>{const d=HM.d;if(!d)return;HM.d=null;if(d.tx===d.ax&&d.ty===d.ay)return;if(!S.house[d.i]||S.house[d.i][2]!==d.id||!hmOk(d.i,d.tx,d.ty)){toast('여기엔 놓을 수 없어요');beep(200,.06);return}hmMove(d.ax,d.ay,d.tx,d.ty,d.id)});
+cv.addEventListener('pointercancel',()=>{HM.d=null});
+function hmMove(ax,ay,tx,ty,id){const ok=ax+','+ay,nk=tx+','+ty;const h=S.house.find(v=>v[0]===ax&&v[1]===ay);if(h){h[0]=tx;h[1]=ty}
+once('mv'+ok,async()=>{const r1=await NET.tx('island/house/'+nk,cur=>cur?undefined:id);if(!r1.committed){if(h){h[0]=ax;h[1]=ay}toast('여기엔 놓을 수 없어요');return}const r2=await NET.tx('island/house/'+ok,cur=>cur===id?null:undefined);if(!r2.committed){await NET.tx('island/house/'+nk,cur=>cur===id?null:undefined);if(h){h[0]=ax;h[1]=ay}toast('끼끼가 먼저 옮긴 것 같아요');return}beep(900,.05);toast(`${IT[id].n} 옮겼어요`)})}
+{const _di=drawInterior;drawInterior=function(){const d=HM.d;let hid=null;if(HM.on&&d&&S.house[d.i]&&S.house[d.i][2]===d.id){hid=S.house.splice(d.i,1)[0]}
+try{_di()}finally{if(hid)S.house.splice(d.i,0,hid)}
+if(!HM.on||S.scene!=='home')return;const[cx,cy]=homeCam();ctx.save();ctx.translate(-cx,-cy);
+S.house.forEach(([x,y,id],i)=>{if(d&&i===d.i)return;const f=IT[id].fp||[1,1];ctx.strokeStyle='rgba(255,216,74,.8)';ctx.lineWidth=1;ctx.strokeRect(x*T+.5,(y-f[1]+1)*T+.5,f[0]*T-1,f[1]*T-1)});
+if(d){const it=IT[d.id],f=it.fp||[1,1],X=d.tx*T,Y=(d.ty-f[1]+1)*T;ctx.fillStyle=d.ok?'rgba(120,220,120,.35)':'rgba(240,90,90,.4)';ctx.fillRect(X,Y,f[0]*T,f[1]*T);ctx.globalAlpha=.85;const ic=it.ic;ctx.drawImage(ic,X+((f[0]*T-ic.width)>>1),(d.ty+1)*T-ic.height-(f[1]>1?0:1));ctx.globalAlpha=1}
+ctx.restore()}}
+{const _fu=furnUI;furnUI=function(k,tx){_fu(k,tx);const row=mb.querySelector('#fp');if(row){const b=document.createElement('button');b.className='gb big';b.textContent='옮기기';b.onclick=()=>{closeModal();hmSet(true)};row.parentNode.appendChild(b)}}}
+TIPS.push('집 안에서 오른쪽 위 "가구 옮기기"를 누르면 가구를 끌어서 옮길 수 있어요.');
+
 const BG=document.createElement('canvas');BG.width=MW*T;BG.height=MH*T;
 function buildBG(){const P=SPAL[season()];const b=BG.getContext('2d');const tufts=(X,Y,h,c,c2)=>{b.fillStyle=c;for(let k=0;k<3;k++){const px=(h>>(k*5))%13,py=(h>>(k*5+3))%12;b.fillRect(X+px,Y+py+1,1,2);b.fillRect(X+px+1,Y+py,1,2)}b.fillStyle=c2;b.fillRect(X+(h>>12)%15,Y+(h>>17)%15,1,1)};
 for(let y=0;y<MH;y++)for(let x=0;x<MW;x++){const t=MAP[y][x],X=x*T,Y=y*T,h=hash(x,y),d=Math.min(x,y,MW-1-x,MH-1-y);
