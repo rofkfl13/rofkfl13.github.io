@@ -2574,12 +2574,12 @@ PZF['34,28']='cboard';OBJ[28*MW+34]=4100;
 // ===== pbt.js : 슬라임 동굴 (횡스크롤 전투) =====
 // ---------- 저장 데이터 ----------
 PF.push('bt');
-function bst(){const d={jc:0,jd:0,max:0,cp:[1],own:{hammer:0},eq:{w:'hammer',a:null,s:null},sk:{},inv:{potion:2,cookie:0,box:0},tk:{reset:0,heal:0,rev:0},qs:['potion','cookie',null],dex:{},kills:0,boss:{},inf:0,ms:null,pend:[],runs:0};
-if(!S.bt||typeof S.bt!=='object')S.bt={};for(const k in d)if(S.bt[k]===undefined)S.bt[k]=JSON.parse(JSON.stringify(d[k]));if(!S.bt.own.hammer&&S.bt.own.hammer!==0)S.bt.own.hammer=0;if(!S.bt.cp.includes(1))S.bt.cp.unshift(1);return S.bt}
+function bst(){const d={jc:0,jd:0,max:0,cp:[1],own:{},eq:{w:null,a:null,s:null},sk:{},inv:{potion:2,cookie:0,box:0},tk:{reset:0,heal:0,rev:0},qs:['potion','cookie',null],dex:{},kills:0,boss:{},inf:0,ms:null,pend:[],runs:0};
+if(!S.bt||typeof S.bt!=='object')S.bt={};for(const k in d)if(S.bt[k]===undefined)S.bt[k]=JSON.parse(JSON.stringify(d[k]));if(!S.bt.cp.includes(1))S.bt.cp.unshift(1);return S.bt}
 // ---------- 장비 ----------
-const BEQ={hammer:{n:'뿅망치',t:'w',c:'h',atk:6,p:0},
-wood:{n:'나무검',t:'w',c:'w',atk:12,p:600,f:0},steel:{n:'강철검',t:'w',c:'w',atk:22,p:2500,f:10},hero:{n:'용사의 검',t:'w',c:'w',atk:38,p:9000,f:25},
-wand:{n:'마법봉',t:'w',c:'m',atk:10,p:600,f:0},star:{n:'별빛 지팡이',t:'w',c:'m',atk:19,p:2500,f:10},aurora:{n:'오로라 지팡이',t:'w',c:'m',atk:34,p:9000,f:25},
+const BEQ={hammer:{n:'뿅망치',t:'w',c:'h',atk:6,coin:1000},
+wood:{n:'나무검',t:'w',c:'w',atk:12,jd:12,f:0},steel:{n:'강철검',t:'w',c:'w',atk:22,jd:40,f:10},hero:{n:'용사의 검',t:'w',c:'w',atk:38,jd:120,f:25},
+wand:{n:'마법봉',t:'w',c:'m',atk:10,jd:12,f:0},star:{n:'별빛 지팡이',t:'w',c:'m',atk:19,jd:40,f:10},aurora:{n:'오로라 지팡이',t:'w',c:'m',atk:34,jd:120,f:25},
 jsword:{n:'젤리 대검',t:'w',c:'w',atk:20,boss:1},mstaff:{n:'버섯 지팡이',t:'w',c:'m',atk:27,boss:1},isword:{n:'서리 검',t:'w',c:'w',atk:42,boss:1},fstaff:{n:'불꽃 지팡이',t:'w',c:'m',atk:50,boss:1},cblade:{n:'수정 대검',t:'w',c:'w',atk:64,boss:1},cstaff:{n:'수정 지팡이',t:'w',c:'m',atk:62,boss:1},
 jelly:{n:'젤리 갑옷',t:'a',c:'near',def:4,p:500,f:0},plate:{n:'강철 갑옷',t:'a',c:'near',def:9,p:2500,f:10},royal:{n:'왕관 갑옷',t:'a',c:'near',def:16,p:9000,f:25},
 cape:{n:'별빛 망토',t:'a',c:'far',def:1,atk:4,p:600,f:0},robe:{n:'물결 로브',t:'a',c:'far',def:3,atk:10,p:3000,f:15},
@@ -2640,7 +2640,7 @@ return L}
 function surfBelow(L,x,y){let best=L.gy;L.plats.forEach(p=>{if(p.y>y&&p.y<best&&x>=p.x&&x<=p.x+p.w)best=p.y});return best}
 // ---------- 시작 / 끝 ----------
 function btKind(f){return f%10===0?'boss':f%10===5?'mid':'norm'}
-function btStart(f,inf){closeModal();const b=bst();b.runs++;BT={f,inf:!!inf,run:{jc:0,jd:0,items:[]},hp:0,last:bnow(),t0:Date.now()};btMountUI();btResize();
+function btStart(f,inf){if(!bst().eq.w||!BEQ[bst().eq.w]){toast('무기가 없어요! 대장간 곰 아저씨에게 뿅망치를 먼저 사요');return}closeModal();const b=bst();b.runs++;BT={f,inf:!!inf,run:{jc:0,jd:0,items:[]},hp:0,last:bnow(),t0:Date.now()};btMountUI();btResize();
 const st=stats();BT.hp=st.hp;btLoad();save(true)}
 function btLoad(force){const f=BT.f,fk=BT.inf?f-50:f;const kind=force||btKind(fk);BT.L=genFloor(f,kind);const L=BT.L;
 BT.p={x:24,y:L.gy-20,vx:0,vy:0,w:10,h:18,dir:1,gr:false,rope:null,inv:1.2,atkT:0,swing:0,drop:0,skT:0,guard:0,buff:0,buffM:1,hitFloor:false,dash:0,jh:false};
@@ -2695,7 +2695,7 @@ m.hp-=d;m.hurt=bnow()+.18;if(!m.boss){m.vx=kb*90;m.vy=m.ground?-80:m.vy}if(opt.s
 BT.combo++;BT.comboT=bnow()+2.5;if(m.hp<=0)btKill(m)}
 function btKill(m){const L=BT.L,b=bst(),dm=L.danger?2:1;b.dex[m.type]=(b.dex[m.type]||0)+1;b.kills++;btMission('kill',1);
 const jc=Math.round((3+BT.f*.6)*dm*(m.boss?25:m.mid?10:1));for(let i=0;i<Math.min(6,1+Math.floor(jc/8));i++)L.drops.push({x:m.x+m.w/2,y:m.y,vx:(Math.random()-.5)*120,vy:-120-Math.random()*80,k:'jc',v:Math.ceil(jc/Math.min(6,1+Math.floor(jc/8))),t:0});
-if(Math.random()<(m.boss?1:m.mid?1:.22))L.drops.push({x:m.x+m.w/2,y:m.y,vx:(Math.random()-.5)*80,vy:-150,k:'jd',v:m.boss?5+L.z*2:m.mid?3:1,t:0});
+if(Math.random()<(m.boss?1:m.mid?1:.3))L.drops.push({x:m.x+m.w/2,y:m.y,vx:(Math.random()-.5)*80,vy:-150,k:'jd',v:m.boss?5+L.z*2:m.mid?3:1,t:0});
 btBurst(m.x+m.w/2,m.y+m.h/2,m.col);if(b.dex[m.type]===30)setTimeout(()=>toast(`도감: ${MT[m.type]?MT[m.type][0]:m.n} 30마리! 데미지 +5%`),300);
 if(m.boss||m.mid){btMission('boss',1);const z=L.z,key=(m.boss?'b':'m')+z;const first=!b.boss[key];b.boss[key]=(b.boss[key]||0)+1;
 const ch=m.boss?(first?1:.3):.15;if(Math.random()<ch){const w=BOSSW[z][Math.floor(Math.random()*BOSSW[z].length)];if(b.own[w]===undefined){b.own[w]=0;btBanner('★ 보스 전용 무기: '+BEQ[w].n,'#ffd84a');btNum(m.x+m.w/2,m.y-20,'★ '+BEQ[w].n,'#ffe86a',true)}else{BT.run.jd+=6;btNum(m.x+m.w/2,m.y-20,'방울 +6','#7ad0ff')}}
@@ -2736,7 +2736,7 @@ function onSurf(o,prevB,L,ignorePlat){if(o.y+o.h>=L.gy){o.y=L.gy-o.h;return{x:0,
 function btUpdate(dt){if(!BT||!BTUI)return;if(BT.paused&&!mOpen){if(BT.dead){btEnd(true);return}BT.paused=false}if(BT.paused||mOpen||dlg)return;const n=bnow(),L=BT.L,p=BT.p,st=stats();btSkBtn();
 L.plats.forEach(q=>{if(q.mv){const nx=Math.round(q.mv.bx+Math.sin(n*q.mv.sp+q.mv.ph)*q.mv.amp);q.dx=nx-q.x;q.x=nx}else q.dx=0});
 // 입력
-const L_=keys.left,R_=keys.right,D_=keys.down,upSoft=BIN.up||BIN.jy<-.38,jumpW=BIN.up||BIN.jy<-.62;if(p.inv>0)p.inv-=dt;
+const L_=keys.left,R_=keys.right,D_=keys.down,upSoft=BIN.up||BIN.jy<-.45,jumpW=BIN.up||BIN.jy<-.8;if(p.inv>0)p.inv-=dt;
 const sp=88*st.spd;if(L_&&!R_)p.dir=-1;else if(R_&&!L_)p.dir=1;
 const nearRope=()=>L.ropes.find(r=>Math.abs(r.x-(p.x+p.w/2))<7&&p.y+p.h>r.y1+2&&p.y<r.y2-4);
 if(!p.rope&&!(n<p.dash)){const r=nearRope();if(r&&upSoft&&!(p.gr&&p.y+p.h<=r.y1+8)){p.rope=r}else if(D_&&p.gr){const r2=L.ropes.find(r=>Math.abs(r.x-(p.x+p.w/2))<8&&Math.abs(r.y1+6-(p.y+p.h))<6);if(r2){p.rope=r2;p.y+=6}}}
@@ -2862,23 +2862,23 @@ let btTab='go';
 function btLobby(tab){if(tab)btTab=tab;const b=bst();btMs();
 const tabs=[['go','🗺 지도'],['eq','🎒 장비'],['shop','🛒 상점'],['sk','✨ 스킬'],['qs','🍱 바로쓰기'],['dex','📖 도감'],['ms','🎯 미션']];
 let h=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><b style="font-size:18px;flex:1">⚔ 슬라임 동굴</b><span class="pill" style="background:#ffe0ec">🍬 ${fmt(b.jc)}</span><span class="pill" style="background:#e0f0ff">💧 ${b.jd}</span><button data-x style="padding:4px 10px">닫기</button></div>`;
-h+=`<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">${tabs.map(([k,n])=>`<button data-bt="${k}" style="padding:5px 8px;font-size:13px;${btTab===k?'background:#ff9ac0;color:#fff;border-color:#e07a9a':''}">${n}</button>`).join('')}</div>`;
+h+=`<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">${tabs.map(([k,n])=>`<button data-bt="${k}" style="padding:5px 8px;font-size:13px;white-space:nowrap;${btTab===k?'background:#ff9ac0;color:#fff;border-color:#e07a9a':''}">${n}</button>`).join('')}</div>`;
 const row=(ic,title,sub,btn)=>`<div class="row" style="align-items:center">${ic}<span style="flex:1;font-size:14px"><b>${title}</b><br><span class="muted" style="font-size:12px">${sub}</span></span>${btn||''}</div>`;
 const eqIc=id=>`<span style="width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;background:#fff3e0;border-radius:8px;font-size:18px">${BEQ[id].t==='w'?(BEQ[id].c==='m'?'🪄':BEQ[id].c==='h'?'🔨':'🗡'):BEQ[id].t==='a'?(BEQ[id].c==='far'?'🧥':'🛡'):'👟'}</span>`;
 const desc=id=>{const e=BEQ[id],lv=eqLv(id),m=1+.1*lv;return(e.atk?`공격 ${Math.round(e.atk*m)}`:'')+(e.def?` 방어 ${Math.round(e.def*m)}`:'')+(e.spd?` 이속 +${Math.round(e.spd*100)}%`:'')+(e.jmp?` 점프 +${Math.round(e.jmp*100)}%`:'')+(e.t==='w'?(e.c==='m'?' · 마술사(원거리)':e.c==='h'?' · 기본':' · 전사(근접)'):e.t==='a'?(e.c==='far'?' · 원거리용':' · 근접용'):'')};
 if(btTab==='go'){const zs=ZNAME.map((n,i)=>{const lo=i*10+1,hi=i*10+10,done=Math.max(0,Math.min(10,b.max-i*10));return`<div style="display:flex;align-items:center;gap:6px;margin:3px 0"><b style="width:62px;font-size:13px">${n}</b><div style="flex:1;display:flex;gap:2px">${Array.from({length:10},(_,j)=>`<span style="flex:1;height:12px;border-radius:3px;background:${j<done?['#ff9ad0','#7ad870','#9ae0ff','#ff7a3a','#b89aff'][i]:'#e8dccc'};${(j===4||j===9)?'outline:2px solid #ffd84a':''}"></span>`).join('')}</div><span class="muted" style="font-size:11px;width:44px;text-align:right">${lo}~${hi}</span></div>`}).join('');
 h+=`<div style="background:#2a2240;color:#fff;border-radius:10px;padding:10px;margin-bottom:8px"><div style="font-size:13px;margin-bottom:4px">최고 기록 <b>${b.max}층</b> · 노란 칸 = 보스 (5층마다 중간보스, 10층마다 보스)</div><div style="background:#fff8ee;border-radius:8px;padding:6px 8px;color:#4a3a30">${zs}</div></div>`;
-h+=`<div style="font-weight:700;margin:4px 0">어디서 시작할까요?</div>`+b.cp.map(f=>`<button class="gb big" data-go="${f}" style="width:100%;margin-bottom:5px">${f===1?'처음부터 1층':`▶ ${f}층부터 (${ZNAME[zoneOf(f)]})`}</button>`).join('');
+if(!b.eq.w)h+=`<div style="background:#ffe8ee;border-radius:8px;padding:8px;font-size:14px;margin-bottom:6px">🔨 아직 무기가 없어요! 동쪽 섬 <b>대장간 곰 아저씨</b>에게 뿅망치(1,000 코인)를 먼저 사요.</div>`;h+=`<div style="font-weight:700;margin:4px 0">어디서 시작할까요?</div>`+b.cp.map(f=>`<button class="gb big" data-go="${f}" style="width:100%;margin-bottom:5px">${f===1?'처음부터 1층':`▶ ${f}층부터 (${ZNAME[zoneOf(f)]})`}</button>`).join('');
 if(b.max>=50)h+=`<button class="gb big" data-inf="1" style="width:100%;margin-bottom:5px;background:#8a6ab8">🗼 무한의 탑 (최고 ${b.inf}층)</button>`;else h+=`<div class="muted" style="font-size:12px">🗼 50층을 깨면 무한의 탑이 열려요</div>`;
 if(b.pend.length)h+=`<button class="gb" id="btpd" style="width:100%;margin-top:6px">맡겨둔 물건 찾기 (${b.pend.length}개)</button>`;
 h+=`<div class="muted" style="font-size:12px;margin-top:8px;line-height:1.6">조이스틱 ↑ 세게 = 점프 (↗↖ 대각선 점프) · 밧줄 앞에서 ↑ = 잡기 · ↓ = 발판 내려가기<br>행동 버튼 = 때리기 (꾹 누르면 계속) · 스킬 버튼 / X키 · 바로쓰기 1·2·3</div>`}
 else if(btTab==='eq'){const st=stats();h+=`<div style="background:#fff3e0;border-radius:8px;padding:8px;margin-bottom:8px;font-size:14px">⚔ 공격 <b>${Math.round(st.atk)}</b> · 🛡 방어 <b>${Math.round(st.def)}</b> · ❤ 체력 <b>${st.hp}</b> · 👟 이속 <b>+${Math.round((st.spd-1)*100)}%</b><br><span class="muted" style="font-size:12px">장비는 능력치만 올려요. 겉모습은 꾸미기 옷 그대로고, 무기만 손에 보여요.</span></div>`;
 [['w','무기'],['a','갑옷'],['s','신발']].forEach(([t,n])=>{h+=`<div style="font-weight:700;margin:6px 0 2px">${n}</div>`;const own=Object.keys(b.own).filter(id=>BEQ[id]&&BEQ[id].t===t);if(t!=='w')h+=row(`<span style="width:34px;text-align:center">✖</span>`,'안 끼기','',b.eq[t]?`<button data-un="${t}">빼기</button>`:'<span class="muted">-</span>');own.forEach(id=>{const on=b.eq[t]===id;h+=row(eqIc(id),`${BEQ[id].n}${eqLv(id)?' +'+eqLv(id):''}${BEQ[id].boss?' <span style="color:#d0407a">★보스</span>':''}`,desc(id),on?'<b style="color:#3f9a3a">착용 중</b>':`<button data-eq="${id}">끼기</button>`)});if(!own.length&&t!=='w')h+='<div class="muted" style="font-size:12px">상점에서 살 수 있어요</div>'});
 h+=`<div class="muted" style="font-size:12px;margin-top:6px">강화(+1, +2…)는 동쪽 섬 대장간 곰 아저씨에게!</div>`}
-else if(btTab==='shop'){h+=`<div style="font-weight:700;margin:2px 0">장비 (젤리코인)</div>`;Object.keys(BEQ).filter(id=>!BEQ[id].boss&&BEQ[id].p>0).forEach(id=>{const e=BEQ[id],own=b.own[id]!==undefined,lock=(e.f||0)>b.max;h+=row(eqIc(id),e.n,desc(id)+(lock?` · ${e.f}층 깨면 열려요`:''),own?'<span class="muted">있음</span>':lock?'<span class="muted">🔒</span>':`<button data-buy="${id}">🍬 ${fmt(e.p)}</button>`)});
+else if(btTab==='shop'){h+=`<div style="background:#fff3e0;border-radius:8px;padding:6px 8px;font-size:13px;margin-bottom:6px">🗡 무기는 동쪽 섬 <b>대장간 곰 아저씨</b>에게 사요 (뿅망치는 코인, 나머지는 젤리 방울)</div><div style="font-weight:700;margin:2px 0">갑옷 · 신발 (젤리코인)</div>`;Object.keys(BEQ).filter(id=>BEQ[id].t!=='w'&&BEQ[id].p>0).forEach(id=>{const e=BEQ[id],own=b.own[id]!==undefined,lock=(e.f||0)>b.max;h+=row(eqIc(id),e.n,desc(id)+(lock?` · ${e.f}층 깨면 열려요`:''),own?'<span class="muted">있음</span>':lock?'<span class="muted">🔒</span>':`<button data-buy="${id}">🍬 ${fmt(e.p)}</button>`)});
 h+=`<div style="font-weight:700;margin:8px 0 2px">먹는 거 (젤리코인)</div>`;['potion','cookie'].forEach(id=>{h+=row(`<span style="font-size:24px;width:34px;text-align:center">${id==='potion'?'🧪':'🍪'}</span>`,`${BCONS[id].n} (${b.inv[id]||0}개)`,BCONS[id].d,`<button data-bc="${id}">🍬 ${BCONS[id].p}</button> <button data-bc5="${id}">x5</button>`)});
 h+=`<div style="font-weight:700;margin:8px 0 2px">교환 (젤리 방울 💧)</div>`;[['reset','스킬 다시찍기권',30,'찍은 스킬을 지우고 다시 골라요'],['heal','회복권',10,'쓰면 체력이 가득 (일시정지 메뉴 · 바로쓰기)'],['rev','부활권',25,'쓰러지면 그 자리에서 다시 일어나요']].forEach(([k,n,c,dsc])=>{h+=row(`<span style="font-size:22px;width:34px;text-align:center">${k==='reset'?'🔄':k==='heal'?'💖':'🕊'}</span>`,`${n} (${b.tk[k]}개)`,dsc,`<button data-tk="${k}" data-c="${c}">💧 ${c}</button>`)})}
-else if(btTab==='sk'){const c=(BEQ[b.eq.w]||BEQ.hammer).c;h+=`<p style="font-size:13px;margin:0 0 6px">무기마다 스킬을 <b>1개</b> 찍어요. MP 없이 기다리는 시간만 있어요. 지금 무기: <b>${BEQ[b.eq.w].n}</b> · 다시찍기권 ${b.tk.reset}개</p>`;
+else if(btTab==='sk'){const c=(BEQ[b.eq.w]||BEQ.hammer).c;h+=`<p style="font-size:13px;margin:0 0 6px">무기마다 스킬을 <b>1개</b> 찍어요. MP 없이 기다리는 시간만 있어요. 지금 무기: <b>${b.eq.w?BEQ[b.eq.w].n:'없음'}</b> · 다시찍기권 ${b.tk.reset}개</p>`;
 SKL[c].forEach(s=>{const on=b.sk[c]===s[0];h+=row(`<span style="font-size:22px;width:34px;text-align:center">${{whirl:'🌀',dash:'💨',guard:'🛡',meteor:'🌠',ice:'❄',heal:'💖',slam:'💥',spin:'🔄'}[s[0]]}</span>`,s[1],`${s[2]} · ${s[3]}초`,on?'<b style="color:#3f9a3a">✓ 찍음</b>':`<button data-sk="${s[0]}">${b.sk[c]?'바꾸기 (권 1장)':'찍기'}</button>`)});
 h+=`<div class="muted" style="font-size:12px;margin-top:6px">${[['h','뿅망치'],['w','검'],['m','지팡이']].map(([k,n])=>`${n}: ${b.sk[k]?SKL[k].find(s=>s[0]===b.sk[k])[1]:'없음'}`).join(' · ')}</div>`}
 else if(btTab==='qs'){const crops=[...new Set(S.inv.filter(v=>IT[v[0]]&&IT[v[0]].cat==='crop').map(v=>v[0]))];const opts=[['','빈칸'],['potion',`회복 물약 (${b.inv.potion})`],['cookie',`전투 쿠키 (${b.inv.cookie})`],['box',`전투 도시락 (${b.inv.box})`],['tk_heal',`회복권 (${b.tk.heal})`]].concat(crops.map(id=>[id,`${IT[id].n} (작물)`]));
@@ -2943,17 +2943,29 @@ R('#8a5a30',ex-14,ey+2,2,14);R('#8a5a30',ex-22,ey-2,18,9);R('#e8c890',ex-21,ey-1
 {const _lk=look;look=function(){const r=_lk();if((S.scene&&S.scene!=='out')||F)return r;if(r&&/잡기|당겨|입질/.test(r.l))return r;const{tx,ty}=front();
 if(tx>=CAVE.x0&&tx<=CAVE.x1&&ty>=CAVE.y0&&ty<=CAVE.y1)return CAVE.ex.includes(tx)&&ty===CAVE.y1?{l:'⚔ 슬라임 동굴 들어가기',fn:()=>btLobby('go')}:{l:'동굴 바위산',fn:()=>say('',['바위산 아래 동굴에서 슬라임 소리가 들려요…','입구 앞에서 Space!'])};
 if(tx>=SMITH.x&&tx<SMITH.x+SMITH.w&&ty>=SMITH.y&&ty<SMITH.y+SMITH.h)return{l:'🔨 대장간',fn:smithUI};return r}}
-LINES.smith=n=>['쇠는 뜨거울 때 두드려야지! 허허.',`${n}, 동굴에서 다치지 말고 다녀와.`,'젤리 방울은 강화할 때 아주 좋은 재료야.','보스 무기는 상점에서 못 사. 직접 잡아야지!'];
+LINES.smith=n=>['쇠는 뜨거울 때 두드려야지! 허허.','처음엔 뿅망치부터! 코인 1,000이면 돼.',`${n}, 동굴에서 다치지 말고 다녀와.`,'젤리 방울은 강화할 때 아주 좋은 재료야.','보스 무기는 상점에서 못 사. 직접 잡아야지!'];
 {const _tk=talk;talk=function(n){if(n.id==='smith'){say('곰 대장장이',['어서 와! 무기 좀 손봐줄까?'],smithUI);return}_tk(n)}}
 // ---------- 대장간 ----------
 function enhCost(lv){return 5+lv*4}function enhRate(lv){return Math.max(30,90-lv*8)}
-function smithUI(){const b=bst();let h=head('🔨 곰 대장장이의 대장간')+`<p style="font-size:13px;margin:0 0 6px">💧 젤리 방울 <b>${b.jd}</b>개 · 강화는 +10까지. <b>실패해도 장비는 그대로</b>, 방울만 사라져요.</p>`;
-const own=Object.keys(b.own).filter(id=>BEQ[id]);own.forEach(id=>{const lv=b.own[id],e=BEQ[id],c=enhCost(lv);h+=`<div class="row"><span style="flex:1;font-size:14px"><b>${e.n} +${lv}</b>${e.boss?' <span style="color:#d0407a">★</span>':''}<br><span class="muted" style="font-size:12px">${lv>=10?'최고 강화!':`+${lv+1} 성공 ${enhRate(lv)}% · 능력치 +10%`}</span></span>${lv>=10?'':`<button data-en="${id}">💧 ${c}</button>`}</div>`});
-h+=`<div style="font-weight:700;margin:10px 0 4px">🍱 전투 도시락 만들기</div><p class="muted" style="font-size:12px;margin:0 0 4px">가방의 작물 2개 + 젤리 방울 3개 → 도시락 1개 (체력 40% + 30초 공격 +25%) · 가진 도시락 ${b.inv.box}개</p>`;
-const crops=S.inv.filter(v=>IT[v[0]]&&IT[v[0]].cat==='crop');h+=crops.length?`<select id="smc" style="width:100%;padding:6px;border-radius:8px;border:2px solid #e0cba8;font-family:inherit;margin-bottom:6px">${crops.map(v=>`<option value="${v[0]}">${IT[v[0]].n} (${v[1]}개)</option>`).join('')}</select><button class="gb" id="smb" style="width:100%">도시락 만들기</button>`:'<div class="muted" style="font-size:12px">가방에 작물이 없어요</div>';
-h+=`<div id="sme" style="min-height:20px;margin-top:6px;font-weight:700;color:#3f7a4a"></div>`;openModal(h);
-document.querySelectorAll('[data-en]').forEach(e=>e.onclick=()=>{const id=e.dataset.en,lv=b.own[id],c=enhCost(lv);if(b.jd<c){$('sme').textContent='젤리 방울이 모자라요';return}b.jd-=c;if(Math.random()*100<enhRate(lv)){b.own[id]=lv+1;beep(1320,.1);setTimeout(()=>beep(1760,.12),120);save(true);smithUI();$('sme').textContent=`성공! ${BEQ[id].n} +${lv+1} ✨`}else{beep(220,.12);save(true);smithUI();$('sme').style.color='#b0506a';$('sme').textContent='아이고, 실패! 장비는 무사해요 (방울만 사라졌어요)'}});
-if($('smb'))$('smb').onclick=()=>{const id=$('smc').value,s=S.inv.find(v=>v[0]===id);if(!s||s[1]<2){$('sme').textContent='그 작물이 2개 필요해요';return}if(b.jd<3){$('sme').textContent='젤리 방울이 모자라요';return}remItem(id,2);b.jd-=3;b.inv.box++;beep(990,.08);save(true);smithUI();$('sme').textContent='전투 도시락 완성! 🍱'}}
+let smTab='buy';
+function smithUI(tab){if(tab)smTab=tab;const b=bst();let h=head('🔨 곰 대장장이의 대장간');
+h+=`<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;align-items:center">${[['buy','🗡 무기 사기'],['en','✨ 강화'],['box','🍱 도시락']].map(([k,n])=>`<button data-sm="${k}" style="padding:5px 8px;font-size:13px;white-space:nowrap;${smTab===k?'background:#ff9ac0;color:#fff;border-color:#e07a9a':''}">${n}</button>`).join('')}<span class="pill" style="background:#e0f0ff;margin-left:auto">💧 ${b.jd}</span></div>`;
+const wst=id=>{const e=BEQ[id],lv=b.own[id]||0;return`공격 ${Math.round(e.atk*(1+.1*lv))} · ${e.c==='m'?'마술사(멀리 쏘기)':e.c==='h'?'기본 무기':'전사(가까이 베기)'}`};
+if(smTab==='buy'){h+=`<p style="font-size:13px;margin:0 0 6px">뿅망치는 <b>코인</b>, 다른 무기는 <b>젤리 방울 💧</b>로 사요. ★ 보스 무기는 동굴 보스만 줘요.</p>`;
+const lines=[['기본',['hammer']],['전사 (검)',['wood','steel','hero']],['마술사 (지팡이)',['wand','star','aurora']],['★ 보스 전용',['jsword','mstaff','isword','fstaff','cblade','cstaff']]];
+lines.forEach(([title,ids])=>{h+=`<div style="font-weight:700;margin:8px 0 2px">${title}</div>`;ids.forEach(id=>{const e=BEQ[id],own=b.own[id]!==undefined,on=b.eq.w===id,lock=(e.f||0)>b.max;let btn;
+if(own)btn=on?'<b style="color:#3f9a3a">착용 중</b>':`<button data-weq="${id}">끼기</button>`;else if(e.boss)btn='<span class="muted" style="font-size:12px">보스가 줘요</span>';else if(lock)btn=`<span class="muted" style="font-size:12px">🔒 ${e.f}층 깨면</span>`;else btn=`<button data-wb="${id}">${e.coin?fmt(e.coin)+' 코인':'💧 '+e.jd}</button>`;
+h+=`<div class="row" style="align-items:center"><span style="width:30px;font-size:20px;text-align:center">${e.c==='m'?'🪄':e.c==='h'?'🔨':'🗡'}</span><span style="flex:1;font-size:14px"><b>${e.n}${own&&b.own[id]?' +'+b.own[id]:''}</b><br><span class="muted" style="font-size:12px">${wst(id)}</span></span>${btn}</div>`})})}
+else if(smTab==='en'){h+=`<p style="font-size:13px;margin:0 0 6px">강화는 +10까지. <b>실패해도 장비는 그대로</b>, 방울만 사라져요.</p>`;const own=Object.keys(b.own).filter(id=>BEQ[id]);if(!own.length)h+='<div class="muted">아직 장비가 없어요. 무기부터 사요!</div>';
+own.forEach(id=>{const lv=b.own[id],e=BEQ[id],c=enhCost(lv);h+=`<div class="row"><span style="flex:1;font-size:14px"><b>${e.n} +${lv}</b>${e.boss?' <span style="color:#d0407a">★</span>':''}<br><span class="muted" style="font-size:12px">${lv>=10?'최고 강화!':`+${lv+1} 성공 ${enhRate(lv)}% · 능력치 +10%`}</span></span>${lv>=10?'':`<button data-en="${id}">💧 ${c}</button>`}</div>`})}
+else{h+=`<p class="muted" style="font-size:13px;margin:0 0 6px">가방의 작물 2개 + 젤리 방울 3개 → 전투 도시락 1개 (체력 40% + 30초 공격 +25%) · 가진 도시락 ${b.inv.box}개</p>`;
+const crops=S.inv.filter(v=>IT[v[0]]&&IT[v[0]].cat==='crop');h+=crops.length?`<select id="smc" style="width:100%;padding:6px;border-radius:8px;border:2px solid #e0cba8;font-family:inherit;margin-bottom:6px">${crops.map(v=>`<option value="${v[0]}">${IT[v[0]].n} (${v[1]}개)</option>`).join('')}</select><button class="gb" id="smb" style="width:100%">도시락 만들기</button>`:'<div class="muted" style="font-size:12px">가방에 작물이 없어요</div>'}
+h+=`<div id="sme" style="min-height:20px;margin-top:6px;font-weight:700;color:#3f7a4a"></div>`;openModal(h);const msg=(t,bad)=>{const e=$('sme');if(e){e.style.color=bad?'#b0506a':'#3f7a4a';e.textContent=t}};
+document.querySelectorAll('[data-sm]').forEach(e=>e.onclick=()=>smithUI(e.dataset.sm));
+document.querySelectorAll('[data-weq]').forEach(e=>e.onclick=()=>{b.eq.w=e.dataset.weq;save(true);smithUI();msg(BEQ[b.eq.w].n+' 장착!')});
+document.querySelectorAll('[data-wb]').forEach(e=>e.onclick=()=>{const id=e.dataset.wb,w=BEQ[id];if(w.coin){if(S.coins<w.coin){msg('코인이 모자라요',1);return}S.coins-=w.coin}else{if(b.jd<w.jd){msg('젤리 방울이 모자라요',1);return}b.jd-=w.jd}b.own[id]=0;b.eq.w=id;beep(990,.08);save(true);smithUI();msg(w.n+' 샀어요! 바로 장착했어요')});
+document.querySelectorAll('[data-en]').forEach(e=>e.onclick=()=>{const id=e.dataset.en,lv=b.own[id],c=enhCost(lv);if(b.jd<c){msg('젤리 방울이 모자라요',1);return}b.jd-=c;if(Math.random()*100<enhRate(lv)){b.own[id]=lv+1;beep(1320,.1);setTimeout(()=>beep(1760,.12),120);save(true);smithUI();msg(`성공! ${BEQ[id].n} +${lv+1} ✨`)}else{beep(220,.12);save(true);smithUI();msg('아이고, 실패! 장비는 무사해요 (방울만 사라졌어요)',1)}});
+if($('smb'))$('smb').onclick=()=>{const id=$('smc').value,sv=S.inv.find(v=>v[0]===id);if(!sv||sv[1]<2){msg('그 작물이 2개 필요해요',1);return}if(b.jd<3){msg('젤리 방울이 모자라요',1);return}remItem(id,2);b.jd-=3;b.inv.box++;beep(990,.08);save(true);smithUI();msg('전투 도시락 완성! 🍱')}}
 // ---------- 업적 / 칭호 ----------
 ACH.push(['btk','동굴 몬스터 잡기',()=>(S.bt&&S.bt.kills)||0,[50,300,1000,3000],['슬라임 사냥꾼','몬스터 헌터','동굴 용사','전설의 용사']],
 ['btf','동굴 깊이',()=>(S.bt&&S.bt.max)||0,[10,20,30,50],['동굴 탐험가','버섯숲 정복자','얼음굴 정복자','수정궁의 주인']],
